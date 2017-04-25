@@ -14,4 +14,8 @@ public class CeateBackendController extends Controller{
 
         return ok("HelloWorld");
     }
+    public Result getUserInformation()
+    {
+        return null;
+    }
 }
