@@ -5,6 +5,7 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index
 GET     /hello                           controllers.CeateBackendController.HelloWorld
+POST    /getUserData         controllers.CeateBackendController.getUserInformation
 
 
 # Map static resources from the /public folder to the /assets URL path
