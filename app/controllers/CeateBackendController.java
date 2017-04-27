@@ -30,7 +30,7 @@ public class CeateBackendController extends Controller{
 
         return ok("HelloWorld");
     }
-    public Result getUserInformation()
+    public Result getUserData()
     {
         JsonNode request = request().body().asJson();
         int id=Integer.parseInt(request.findPath(ConstantField.userAndArticleId).toString());
@@ -60,7 +60,7 @@ public class CeateBackendController extends Controller{
         }
         return ok(result);
     }
-    public Result updateUserInformation()
+    public Result updateUserData()
     {
         JsonNode request = request().body().asJson();
         JsonNode result = Json.newObject();
