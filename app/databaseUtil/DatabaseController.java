@@ -70,10 +70,9 @@ public class DatabaseController {
         }
 
     }
-    public void execUpdate(String tableName, SqlObject obj)
+    public void execUpdate(String tableName, SqlObject obj,String condition)
     {
-        String sql=" insert into "+tableName+" ("+obj.getColumnNameString()+")"
-                + " values ("+obj.getColumnValueString()+");";
+        String sql="update "+tableName+" set "+obj.getColumnNameValuePairString()+" "+condition+";";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.execute();

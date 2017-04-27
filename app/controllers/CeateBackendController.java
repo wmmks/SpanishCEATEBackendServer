@@ -9,13 +9,12 @@ import play.libs.Json;
 import play.mvc.*;
 
 import sqlCommandLogic.SqlCommandComposer;
+import sqlCommandLogic.UserData;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Set;
 
 /**
  * Created by roye on 2017/4/24.
@@ -64,13 +63,15 @@ public class CeateBackendController extends Controller{
     public Result updateUserInformation()
     {
         JsonNode request = request().body().asJson();
-        JSONObject userInformationJsonObject=new JSONObject(request.toString());
-        Set<String> columnNameSet= userInformationJsonObject.keySet();
-        for(String columnName:columnNameSet)
-        {
-            Arrays.asList(DatabaseColumnNameVariableTable.tablesNameList).contains("");
-
-        }
+        JSONObject userDataJsonObject=new JSONObject(request.toString());
+        UserData userData=sqlCommandComposer.getUserData(userDataJsonObject);
+        int id=userDataJsonObject.getInt(DatabaseColumnNameVariableTable.id);
+        String updateCondition="where "+DatabaseColumnNameVariableTable.id+"="+id;
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.usersInformationTableName,userData.getUserInformationSqlObject(),updateCondition);
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesInformationTableName,userData.getArticleInformationSqlObject(),updateCondition);
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName,userData.getClassInformationSqlObject(),updateCondition);
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName,userData.getArticleContentSqlObject(),updateCondition);
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName,userData.getUserSpecialExperienceSqlObject(),updateCondition);
 
         return ok(request.toString());
     }

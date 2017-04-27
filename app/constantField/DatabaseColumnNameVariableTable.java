@@ -5,6 +5,13 @@ package constantField;
  */
 public class DatabaseColumnNameVariableTable {
 
+
+    public static int genericColumnNameNumber =1;
+    public static int usersInformationTableNumber=2;
+    public static int classInformationTableNumber=3;
+    public static int articlesInformationTableNumber=4;
+    public static int usersSpecialExperienceTableNumber=5;
+    public static int articlesContentTableNumber=6;
     /**
         * table name list: the table name in ceate_version_2 database
         */

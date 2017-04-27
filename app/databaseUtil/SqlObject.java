@@ -90,6 +90,20 @@ public class SqlObject {
         }
         return  columnPreparedStatementString;
     }
+    public String getColumnNameValuePairString()
+    {
+        String columnPreparedStatementString="";
+        if(size!=0)
+        {
+            columnPreparedStatementString+=columnName.get(0)+"="+toSqlValue(columnValue.get(0));
+            for(int i=1;i<size;i++)
+            {
+                columnPreparedStatementString+=",";
+                columnPreparedStatementString+=columnName.get(i)+"="+toSqlValue(columnValue.get(i));
+            }
+        }
+        return  columnPreparedStatementString;
+    }
     private String toSqlValue(Object obj)
     {
         if(obj.getClass()==Integer.class)
