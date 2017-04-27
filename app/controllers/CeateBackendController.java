@@ -63,6 +63,7 @@ public class CeateBackendController extends Controller{
     public Result updateUserInformation()
     {
         JsonNode request = request().body().asJson();
+        JsonNode result = Json.newObject();
         JSONObject userDataJsonObject=new JSONObject(request.toString());
         UserData userData=sqlCommandComposer.getUserData(userDataJsonObject);
         int id=userDataJsonObject.getInt(DatabaseColumnNameVariableTable.id);
@@ -72,7 +73,7 @@ public class CeateBackendController extends Controller{
         databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName,userData.getClassInformationSqlObject(),updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName,userData.getArticleContentSqlObject(),updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName,userData.getUserSpecialExperienceSqlObject(),updateCondition);
-
-        return ok(request.toString());
+        result=Json.parse(new JSONObject().put("message","User id="+id+" data update finish").toString());
+        return ok(result);
     }
 }
