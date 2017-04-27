@@ -60,4 +60,11 @@ public class CeateBackendController extends Controller{
         }
         return ok(result);
     }
+    public Result updateUserInformation()
+    {
+        JsonNode request = request().body().asJson();
+
+       System.out.println(request.toString());
+        return ok(request.toString());
+    }
 }
