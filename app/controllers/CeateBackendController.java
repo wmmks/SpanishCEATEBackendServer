@@ -2,19 +2,20 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
+import constantField.DatabaseColumnNameVariableTable;
 import databaseUtil.DatabaseController;
 import json.JSONObject;
 import play.libs.Json;
 import play.mvc.*;
 
 import sqlCommandLogic.SqlCommandComposer;
-import sqlCommandLogic.SqlResultWrapper;
-import views.html.*;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Created by roye on 2017/4/24.
@@ -63,8 +64,14 @@ public class CeateBackendController extends Controller{
     public Result updateUserInformation()
     {
         JsonNode request = request().body().asJson();
+        JSONObject userInformationJsonObject=new JSONObject(request.toString());
+        Set<String> columnNameSet= userInformationJsonObject.keySet();
+        for(String columnName:columnNameSet)
+        {
+            Arrays.asList(DatabaseColumnNameVariableTable.tablesNameList).contains("");
 
-       System.out.println(request.toString());
+        }
+
         return ok(request.toString());
     }
 }

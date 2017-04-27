@@ -14,11 +14,13 @@ public class DatabaseColumnNameVariableTable {
     public static String classInformationTableName="class_information";
     public static String usersInformationTableName="users_information";
     public static String usersSpecialExperienceTableName="users_special_experience";
+    public static String[] tablesNameList ={usersInformationTableName,articlesInformationTableName,classInformationTableName,usersSpecialExperienceTableName,articlesContentTableName};
     /*
         *  genneric column: It is the id column for all table.
          */
     public static String id="id";
 
+    public static String[] genericColumnNameList={id};
     /**
          *articles_information column Name List: the column name of articles_information table
          */
@@ -31,6 +33,7 @@ public class DatabaseColumnNameVariableTable {
     public static String articleTopic="article_topic";
     public static String articleTitle="article_title";
     public static String numberOfWords="number_of_words";
+    public static String[] articlesInformationColumnNameList={submittedYear,submittedMonth,haveSubmitted,writtingLocation,articleStyle,articleTopic,articleTitle,numberOfWords};
     /**
         * user_information column Name List: the column name of user_information table
          * */
@@ -51,6 +54,7 @@ public class DatabaseColumnNameVariableTable {
     public static String wisconsinNumberOfCorrect="wisconsin_number_of_correct";
     public static String wisconsinScore="wisconsin_score";
     public static String dateOfAgreementSubmit="date_of_agreement_submit";
+    public static String[] userInformationColumnNameList={idUnderYear,chineseName,spanishName,gender,schoolName,studentId,schoolStstem,department,grade,group,learningHours,learningYears,learningMonths,wisconsinNumberOfCorrect,wisconsinScore,dateOfAgreementSubmit};
     /*
         *  user_special_information column Name List: the column name of special_information table;
         * */
@@ -59,6 +63,7 @@ public class DatabaseColumnNameVariableTable {
     public static String spanishRelatedResident="spanish_related_resident";
     public static String spanishRelatedExchange="spanish_related_exchange";
     public static String spanishDepartmentExchange="spanish_department_exchange";
+    public static String[] userSpecialInformationColumnNameList={motherTongue,specialExperience,spanishRelatedResident,spanishRelatedExchange,spanishDepartmentExchange};
     /*
         *class_information column Name List: the column name of class_information table;
          *  */
@@ -68,11 +73,11 @@ public class DatabaseColumnNameVariableTable {
     public static String classGrade="class_grade";
     public static String classGroutp="class_group";
     public static String teacher="teacher";
-
+    public static String[] classInformationColumnNameList={className,classSchoolSystem,classDepartment,classGrade,classGroutp,teacher};
     /**
         *articles_content column Name List: the column name of articles_content table;
         */
     public static String originalArticleText="original_article_text";
     public static String correctedArticleText="corrected_article_text";
-
+    public static String[] articleContentColumnNameList={originalArticleText,correctedArticleText};
 }
