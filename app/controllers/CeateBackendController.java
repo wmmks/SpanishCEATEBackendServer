@@ -23,8 +23,8 @@ public class CeateBackendController extends Controller{
 
     @Inject
     SqlCommandComposer sqlCommandComposer;
-    @Inject
-    DatabaseController databaseController;
+
+
     public Result HelloWorld()
     {
 
@@ -32,6 +32,7 @@ public class CeateBackendController extends Controller{
     }
     public Result getUserData()
     {
+        DatabaseController databaseController=new DatabaseController();
         JsonNode request = request().body().asJson();
         int id=Integer.parseInt(request.findPath(ConstantField.userAndArticleId).toString());
         JsonNode result = Json.newObject();
@@ -62,6 +63,7 @@ public class CeateBackendController extends Controller{
     }
     public Result updateUserData()
     {
+        DatabaseController databaseController=new DatabaseController();
         JsonNode request = request().body().asJson();
         JsonNode result = Json.newObject();
         JSONObject userDataJsonObject=new JSONObject(request.toString());
