@@ -11,9 +11,9 @@ import java.util.Set;
  * Created by roye on 2017/4/26.
  */
 public class SqlCommandComposer {
-    public String getUserDataSqlById(int id)
+    public String getUserDataSqlByIdAndSystemType(int id, int systemType)
     {
-        String sql="select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.id=b.id and b.id=c.id and c.id=d.id and d.id=e.id and a.id="+id;
+        String sql="select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.id=b.id and b.id=c.id and c.id=d.id and d.id=e.id and a.id=" + id + " and a.system_type=" + systemType;
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject)

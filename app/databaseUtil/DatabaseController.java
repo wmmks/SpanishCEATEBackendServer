@@ -1,6 +1,5 @@
 package databaseUtil;
 
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
@@ -19,7 +18,6 @@ public class DatabaseController {
     private Connection connection;
     private Statement statement;
     private PreparedStatement preparedStatement;
-
     public DatabaseController()
     {
         initLoadJdbc();
@@ -28,8 +26,8 @@ public class DatabaseController {
     private void initConnection()
     {
         try {
-            connection = DriverManager.getConnection(dbHost+dbName+"?useUnicode=true&characterEncoding=utf8",userName,password);
-            System.out.println(dbHost+dbName+"?useUnicode=true&characterEncoding=utf8"+userName+password);
+            connection = DriverManager.getConnection(dbHost + dbName + "?useUnicode=true&characterEncoding=utf8", userName, password);
+            System.out.println(dbHost + dbName + "?useUnicode=true&characterEncoding=utf8" + userName + password);
             //statement=connection.createStatement();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,13 +36,13 @@ public class DatabaseController {
     }
     private void initLoadJdbc()
     {
-        Properties properties=new Properties();
+        Properties properties = new Properties();
         try {
             properties.load(new FileInputStream("conf/databaseConfiguration.properties"));
-            dbHost=properties.getProperty("dbHost");
-            dbName=properties.getProperty("dbName");
-            userName=properties.getProperty("userName");
-            password=properties.getProperty("password");
+            dbHost = properties.getProperty("dbHost");
+            dbName = properties.getProperty("dbName");
+            userName = properties.getProperty("userName");
+            password = properties.getProperty("password");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,28 +70,24 @@ public class DatabaseController {
     }
     public void execUpdate(String tableName, SqlObject obj,String condition)
     {
-        String sql="update "+tableName+" set "+obj.getColumnNameValuePairString()+" "+condition+";";
+        String sql="update " + tableName + " set " + obj.getColumnNameValuePairString() + " " + condition + ";";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.execute();
         } catch (SQLException e) {
-            System.out.println("The data has been loaded into db "+tableName+" table.");
+            System.out.println("The data has been loaded into db " + tableName + " table.");
         }
 
     }
     public ResultSet execSelect(String sql)
     {
-        ResultSet resultSet=null;
+        ResultSet resultSet = null;
        try {
            Statement statement = connection.createStatement();
-           resultSet= statement.executeQuery(sql);
-
-
+           resultSet = statement.executeQuery(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return resultSet;
     }
-
-
 }
