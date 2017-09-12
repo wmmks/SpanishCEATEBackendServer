@@ -32,15 +32,17 @@ public class DatabaseColumnNameVariableTable {
          *articles_information column Name List: the column name of articles_information table
          */
 
-    public static String submittedYear="submitted_year";
-    public static String submittedMonth="submitted_month";
-    public static String haveSubmitted="have_submitted";
-    public static String writtingLocation="writting_location";
-    public static String articleStyle="article_style";
-    public static String articleTopic="article_topic";
-    public static String articleTitle="article_title";
-    public static String numberOfWords="number_of_words";
-    public static String[] articlesInformationColumnNameList={submittedYear,submittedMonth,haveSubmitted,writtingLocation,articleStyle,articleTopic,articleTitle,numberOfWords};
+    public static String submittedYear = "submitted_year";
+    public static String submittedMonth = "submitted_month";
+    public static String haveSubmitted = "have_submitted";
+    public static String writtingLocation = "writting_location";
+    public static String articleStyle = "article_style";
+    public static String articleTopic = "article_topic";
+    public static String articleTitle = "article_title";
+    public static String numberOfWords = "number_of_words";
+    public static String longMin = "long_min";
+    public static String longSeg = "long_seg";
+    public static String[] articlesInformationColumnNameList = {submittedYear, submittedMonth, haveSubmitted, writtingLocation, articleStyle, articleTopic, articleTitle, numberOfWords, longMin, longSeg};
     /**
         * user_information column Name List: the column name of user_information table
          * */
@@ -51,7 +53,7 @@ public class DatabaseColumnNameVariableTable {
     public static String gender = "gender";
     public static String schoolName = "school_name";
     public static String studentId = "student_id";
-    public static String schoolStstem = "school_system";
+    public static String schoolSystem = "school_system";
     public static String department = "department";
     public static String grade = "grade";
     public static String group = "group_type";
@@ -61,7 +63,9 @@ public class DatabaseColumnNameVariableTable {
     public static String wisconsinNumberOfCorrect = "wisconsin_number_of_correct";
     public static String wisconsinScore = "wisconsin_score";
     public static String dateOfAgreementSubmit = "date_of_agreement_submit";
-    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, gender, schoolName, studentId, schoolStstem, department, grade, group, learningHours, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit};
+    public static String level = "level";
+    public static String collector = "collector";
+    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, gender, schoolName, studentId, schoolSystem, department, grade, group, learningHours, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit, level, collector};
     /*
         *  user_special_information column Name List: the column name of special_information table;
         * */
