@@ -12,3 +12,6 @@ libraryDependencies ++= Seq(
   javaWs,
   "mysql" % "mysql-connector-java" % "5.0.8"
 )
+// https://mvnrepository.com/artifact/dom4j/dom4j
+libraryDependencies += "dom4j" % "dom4j" % "1.6.1"
+

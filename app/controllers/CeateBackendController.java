@@ -36,10 +36,6 @@ public class CeateBackendController extends Controller{
         JsonNode request = request().body().asJson();
         int id = Integer.parseInt(request.findPath(ConstantField.userAndArticleId).toString());
         int systemType = Integer.parseInt(request.findPath(ConstantField.userAndArticleSystemType).textValue());
-        // CEATE value is zero, so must revise database CEATE value is one
-        if (systemType == 1) {
-            systemType -= 1;
-        }
         JsonNode result = Json.newObject();
         ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getUserDataSqlByIdAndSystemType(id, systemType));
         try {

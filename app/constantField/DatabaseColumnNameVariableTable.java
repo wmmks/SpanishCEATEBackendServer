@@ -90,5 +90,6 @@ public class DatabaseColumnNameVariableTable {
         */
     public static String originalArticleText = "original_article_text";
     public static String correctedArticleText = "corrected_article_text";
-    public static String[] articleContentColumnNameList = {originalArticleText, correctedArticleText};
+    public static String xmlContent = "xml_content";
+    public static String[] articleContentColumnNameList = {originalArticleText, correctedArticleText, xmlContent};
 }

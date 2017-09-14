@@ -66,18 +66,16 @@ public class DatabaseController {
         } catch (SQLException e) {
             System.out.println("The data has been loaded into db "+tableName+" table.");
         }
-
     }
     public void execUpdate(String tableName, SqlObject obj,String condition)
     {
-        String sql="update " + tableName + " set " + obj.getColumnNameValuePairString() + " " + condition + ";";
+        String sql = "update " + tableName + " set " + obj.getColumnNameValuePairString() + " " + condition + ";";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.execute();
         } catch (SQLException e) {
             System.out.println("The data has been loaded into db " + tableName + " table.");
         }
-
     }
     public ResultSet execSelect(String sql)
     {
