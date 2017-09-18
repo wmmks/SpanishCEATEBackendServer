@@ -2,6 +2,7 @@ package sqlCommandLogic;
 
 import constantField.DatabaseColumnNameVariableTable;
 import databaseUtil.SqlObject;
+import extractContent.ExtractArticleContentColumnObject;
 import json.JSONObject;
 
 import java.util.Arrays;
@@ -20,13 +21,14 @@ public class SqlCommandComposer {
     {
         String sql="";
         UserData userData=new UserData();
-        Set<String> columnNameSet= userDataJsonObject.keySet();
+        Set<String> columnNameSet = userDataJsonObject.keySet();
         SqlObject userInformationSqlObject=new SqlObject();
         SqlObject articleInformationSqlObject=new SqlObject();
         SqlObject classInformationSqlObject=new SqlObject();
         SqlObject userSpecialExperienceSqlObject=new SqlObject();
         SqlObject articleContentSqlObject=new SqlObject();
-        for(String columnName:columnNameSet)
+        ExtractArticleContentColumnObject extractArticleContentColumnObject = new ExtractArticleContentColumnObject();
+        for(String columnName : columnNameSet)
         {
             if(checkTableNumber(columnName)==DatabaseColumnNameVariableTable.genericColumnNameNumber)
             {
@@ -54,7 +56,9 @@ public class SqlCommandComposer {
             }
             else if(checkTableNumber(columnName)==DatabaseColumnNameVariableTable.articlesContentTableNumber)
             {
-                articleContentSqlObject.addSqlObject(columnName,userDataJsonObject.get(columnName));
+                extractArticleContentColumnObject.setArticleContentColumnObject(columnName, userDataJsonObject);
+                Object object = extractArticleContentColumnObject.getArticleContentColumnObject();
+                articleContentSqlObject.addSqlObject(columnName, object);
             }
         }
         userData.setUserInformationSqlObject(userInformationSqlObject);

@@ -2,12 +2,12 @@ package articleXMLReader;
 
 import constantField.XMLArticleConstantTable;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import java.io.StringReader;
+
 import java.util.Iterator;
-import org.dom4j.io.SAXReader;
 
 /**
  * XML Parser.
@@ -36,8 +36,7 @@ public class XMLParser {
      * @throws DocumentException Document Exception
      */
     public void setXMLParser(String xml) throws DocumentException {
-        SAXReader reader = new SAXReader();
-        Iterator ir = reader.read(new StringReader(xml)).getRootElement().nodeIterator();
+        Iterator ir = DocumentHelper.parseText(xml).getRootElement().nodeIterator();
         while (ir.hasNext()) {
             Node textNode = (Node) ir.next();
             if (textNode.getNodeTypeName().equals(XMLArticleConstantTable.xmlTextType)) {
