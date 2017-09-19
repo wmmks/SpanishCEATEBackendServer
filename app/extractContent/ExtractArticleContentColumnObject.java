@@ -2,6 +2,7 @@ package extractContent;
 
 import articleXMLReader.XMLParser;
 import constantField.DatabaseColumnNameVariableTable;
+import constantField.XMLArticleConstantTable;
 import json.JSONObject;
 
 import java.util.regex.Pattern;
@@ -42,6 +43,7 @@ public class ExtractArticleContentColumnObject {
             try {
                 xmlParser.setXMLParser(userDataJsonObject.getString(columnName));
             } catch (Exception e) {
+                XMLArticleConstantTable.xmlErrorFlag = true;
                 e.printStackTrace();
             }
             object = userDataJsonObject.get(columnName);

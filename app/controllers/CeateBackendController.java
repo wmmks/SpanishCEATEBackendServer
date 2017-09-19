@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
+import constantField.XMLArticleConstantTable;
 import databaseUtil.DatabaseController;
 import json.JSONObject;
 import play.libs.Json;
@@ -74,7 +75,10 @@ public class CeateBackendController extends Controller{
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersInformationTableName, userData.getUserInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesInformationTableName, userData.getArticleInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName, userData.getClassInformationSqlObject(), updateCondition);
-        databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName, userData.getArticleContentSqlObject(), updateCondition);
+        if (!XMLArticleConstantTable.xmlErrorFlag) {
+            databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName, userData.getArticleContentSqlObject(), updateCondition);
+        }
+        XMLArticleConstantTable.xmlErrorFlag = false;
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName, userData.getUserSpecialExperienceSqlObject(), updateCondition);
         result = Json.parse(new JSONObject().put("message", "User id=" + id + " data update finish").toString());
         return ok(result);
