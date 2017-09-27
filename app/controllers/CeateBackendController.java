@@ -75,12 +75,14 @@ public class CeateBackendController extends Controller{
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersInformationTableName, userData.getUserInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesInformationTableName, userData.getArticleInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName, userData.getClassInformationSqlObject(), updateCondition);
+        databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName, userData.getUserSpecialExperienceSqlObject(), updateCondition);
         if (!XMLArticleConstantTable.xmlErrorFlag) {
             databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName, userData.getArticleContentSqlObject(), updateCondition);
+            result = Json.parse(new JSONObject().put("message", "User id=" + id + " data update finish").toString());
+        } else {
+            result = Json.parse(new JSONObject().put("error_message", "User id=" + id + " xml format is incorrect, please fix it and re-click update.").toString());
         }
         XMLArticleConstantTable.xmlErrorFlag = false;
-        databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName, userData.getUserSpecialExperienceSqlObject(), updateCondition);
-        result = Json.parse(new JSONObject().put("message", "User id=" + id + " data update finish").toString());
         return ok(result);
     }
 }

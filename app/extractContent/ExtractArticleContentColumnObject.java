@@ -1,5 +1,6 @@
 package extractContent;
 
+import articleXMLReader.Article;
 import articleXMLReader.XMLParser;
 import constantField.DatabaseColumnNameVariableTable;
 import constantField.XMLArticleConstantTable;
@@ -49,13 +50,13 @@ public class ExtractArticleContentColumnObject {
             object = userDataJsonObject.get(columnName);
         } else if (columnName.equals(DatabaseColumnNameVariableTable.originalArticleText)) {
             if (isChinese(xmlParser.getOriginalArticle().toString())) {
-                object = reviseTextContent(xmlParser);
+                object = reviseTextContent(xmlParser.getOriginalArticle());
             } else {
                 object = xmlParser.getOriginalArticle();
             }
         } else if (columnName.equals(DatabaseColumnNameVariableTable.correctedArticleText)) {
             if (isChinese(xmlParser.getCorrectedArticle().toString())) {
-                object = reviseTextContent(xmlParser);
+                object = reviseTextContent(xmlParser.getCorrectedArticle());
             } else {
                 object = xmlParser.getCorrectedArticle();
             }
@@ -70,17 +71,17 @@ public class ExtractArticleContentColumnObject {
      * @param article article
      * @return content
      */
-    private String reviseTextContent(XMLParser article) {
+    private String reviseTextContent(Article article) {
         String content = "";
-        for (int j = 0; j < article.getOriginalArticle().getArticleList().size(); j++) {
+        for (int j = 0; j < article.getArticleList().size(); j++) {
             if (j != 0) {
-                content += article.getOriginalArticle().getArticleList().get(j);
+                content += article.getArticleList().get(j);
             } else {
-                if (article.getOriginalArticle().getArticleList().get(j).contains("\t")) {
-                    String[] x = article.getOriginalArticle().getArticleList().get(j).split("\t");
+                if (article.getArticleList().get(j).contains("\t")) {
+                    String[] x = article.getArticleList().get(j).split("\t");
                     content += "      " + x[x.length - 1];
-                } else if (article.getOriginalArticle().getArticleList().get(j).contains(" ")) {
-                    String[] x = article.getOriginalArticle().getArticleList().get(j).split(" ");
+                } else if (article.getArticleList().get(j).contains(" ")) {
+                    String[] x = article.getArticleList().get(j).split(" ");
                     content += "      " + x[x.length - 1];
                 }
             }
