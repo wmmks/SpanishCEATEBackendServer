@@ -12,9 +12,38 @@ import java.util.Set;
  * Created by roye on 2017/4/26.
  */
 public class SqlCommandComposer {
-    public String getUserDataSqlByIdAndSystemType(int id, int systemType)
-    {
-        String sql="select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.id=b.id and b.id=c.id and c.id=d.id and d.id=e.id and a.id=" + id + " and a.system_type=" + systemType;
+    public String getUserDataSqlByIdAndSystemType(int id, int systemType) {
+        String sql = "select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.id=b.id and b.id=c.id and c.id=d.id and d.id=e.id and a.id=" + id + " and a.system_type=" + systemType;
+        return sql;
+    }
+    public String getOtherColumnSqlByText(String text) {
+        String sql = "select * from words_table as a where a.text='" + text + "'";
+        return sql;
+    }
+    public String getOtherColumnSqlByTextAndPOS(String text, String pos) {
+        String sql = "select * from words_table as a where a.text='" + text + "' and a.pos='" + pos + "'";
+        return sql;
+    }
+    public String getOtherColumnSqlByWordId(int id) {
+        String sql = "select * from original_words_Index_table as a where a.word_id='" + id + "'";
+        return sql;
+    }
+    public String getOtherColumnSqlByWordId(int sentenceID, int position) {
+        String sql = "select * from original_words_Index_table as a where a.sentence_id='"
+                + sentenceID + "'" + "and a.position='" + position + "'";
+        return sql;
+    }
+    public String getOtherColumnSqlByNextWordIDAndPOS(int nextWordID, String pos) {
+        String sql = "select * from words_table as a where a.id='"
+                + nextWordID + "'" + "and a.pos='" + pos + "'";
+        return sql;
+    }
+    public String getOriginalSqlBySentenceId(int id) {
+        String sql = "select * from original_sentences_content as a where a.id='" + id + "'";
+        return sql;
+    }
+    public String getCorrectSqlBySentenceID(int id) {
+        String sql = "select * from corrected_sentences_content as a where a.id='" + id + "'";
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject)

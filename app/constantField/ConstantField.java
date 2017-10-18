@@ -8,4 +8,7 @@ public class ConstantField {
     static public String userAndArticleSystemType = "system_type";
     static public String databaseStringType = "VARCHAR";
     static public String databaseIntType = "INT";
+    static public String wordText = "text";
+    static public String wordPOS = "pos";
+    static public String nextWordPOS = "next_pos";
 }

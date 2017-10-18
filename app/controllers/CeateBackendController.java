@@ -1,5 +1,6 @@
 package controllers;
 
+import SearchType.Palabra;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
@@ -16,6 +17,7 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * Created by roye on 2017/4/24.
@@ -83,6 +85,32 @@ public class CeateBackendController extends Controller{
             result = Json.parse(new JSONObject().put("error_message", "User id=" + id + " xml format is incorrect, please fix it and re-click update.").toString());
         }
         XMLArticleConstantTable.xmlErrorFlag = false;
+        return ok(result);
+    }
+
+    /**
+     * Search Page.
+     */
+    public Result getSearchData() throws SQLException {
+        JsonNode request = request().body().asJson();
+        JSONObject userDataJsonObject = new JSONObject(request.toString());
+        ArrayList<String> originalList;
+        ArrayList<String> correctList;
+        String wordText = userDataJsonObject.getString(ConstantField.wordText);
+        String wordPOS = userDataJsonObject.getString(ConstantField.wordPOS);
+        String nextWordPOS = userDataJsonObject.getString(ConstantField.nextWordPOS);
+        Palabra palabra = new Palabra();
+        palabra.setPalabraSentence(wordText, wordPOS, nextWordPOS);
+        originalList = palabra.getOriginalList();
+        correctList = palabra.getCorrectList();
+        for (String original : originalList) {
+            System.out.println("original " + original);
+        }
+        for (String correct : correctList) {
+            System.out.println("correct " + correct);
+        }
+
+        JsonNode result = Json.parse(new JSONObject().put("message", "test").toString());
         return ok(result);
     }
 }
