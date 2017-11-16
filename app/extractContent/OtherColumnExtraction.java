@@ -1,5 +1,6 @@
 package extractContent;
 
+import constantField.ConstantField;
 import databaseUtil.DatabaseController;
 import sqlCommandLogic.SqlCommandComposer;
 
@@ -7,6 +8,9 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Other Column Extraction.
@@ -29,11 +33,11 @@ public class OtherColumnExtraction {
     /**
      * Get Other Column Content.
      */
-    public ArrayList<String> getOtherColumnExtraction(Object object, String flag) throws SQLException {
+    public List getOtherColumnExtraction(Object object, String flag) throws SQLException {
         switch (flag) {
             // 會出現 0~多
             case "wordID" :
-                ArrayList<String> wordIDList = new ArrayList<>();
+                List<String> wordIDList = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByText(object.toString()));
                 while (resultSet.next()) {
                     wordIDList.add(resultSet.getObject(1).toString());
@@ -41,7 +45,7 @@ public class OtherColumnExtraction {
                 return wordIDList;
             // 只會出現一個或沒有
             case "textAndPos_WordID" :
-                ArrayList<String> textAndPosWordIDList = new ArrayList<>();
+                List<String> textAndPosWordIDList = new ArrayList<>();
                 String[] textAndPosWordID = object.toString().split(":");
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByTextAndPOS
                         (textAndPosWordID[0], textAndPosWordID[1]));
@@ -50,32 +54,59 @@ public class OtherColumnExtraction {
                 }
                 return textAndPosWordIDList;
             // 會出現 0~多
-            case "sentenceID" :
-                ArrayList<String> sentenceID = new ArrayList<>();
-                resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByWordId(Integer.parseInt(object.toString())));
+            case "sentenceIDByOriginal" :
+                ArrayList<String> sentenceIDByOriginal = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
-                    sentenceID.add(resultSet.getObject(2).toString());
+                    sentenceIDByOriginal.add(resultSet.getObject(2).toString());
                 }
-                return sentenceID;
+                return sentenceIDByOriginal;
             // 會出現 0~多
-            case "sentenceIDAndPosition" :
-                ArrayList<String> sentenceIDAndPosition = new ArrayList<>();
-                resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByWordId(Integer.parseInt(object.toString())));
+            case "sentenceIDByCorrect" :
+                ArrayList<String> sentenceIDByCorrect = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
-                    sentenceIDAndPosition.add(resultSet.getObject(2).toString()
+                    sentenceIDByCorrect.add(resultSet.getObject(2).toString());
+                }
+                return sentenceIDByCorrect;
+            // 會出現 0~多
+            case "sentenceIDAndPositionByOriginal" :
+                ArrayList<String> sentenceIDAndPositionByOriginal = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
+                while (resultSet.next()) {
+                    sentenceIDAndPositionByOriginal.add(resultSet.getObject(2).toString()
                     + ":" + resultSet.getObject(4).toString());
                 }
-                return sentenceIDAndPosition;
-            // 只會有一個或沒有
-            case "nextWordID" :
-                ArrayList<String> nextWordIDList = new ArrayList<>();
-                String[] nextWordID = object.toString().split(":");
-                resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByWordId(
-                        Integer.parseInt(nextWordID[0]), Integer.parseInt(nextWordID[1]) + 1));
-                if (resultSet.next()) {
-                    nextWordIDList.add(resultSet.getObject(3).toString());
+                return sentenceIDAndPositionByOriginal;
+            // 會出現 0~多
+            case "sentenceIDAndPositionByCorrect" :
+                ArrayList<String> sentenceIDAndPositionByCorrect = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(Integer.parseInt(object.toString())));
+                while (resultSet.next()) {
+                    sentenceIDAndPositionByCorrect.add(resultSet.getObject(2).toString()
+                            + ":" + resultSet.getObject(4).toString());
                 }
-                return nextWordIDList;
+                return sentenceIDAndPositionByCorrect;
+            // 只會有一個或沒有
+            case "nextWordIDByOriginal" :
+                ArrayList<String> nextWordIDByOriginal = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(
+                        Integer.parseInt(object.toString().split(":")[0])
+                        , Integer.parseInt(object.toString().split(":")[1]) + 1));
+                if (resultSet.next()) {
+                    nextWordIDByOriginal.add(resultSet.getObject(3).toString());
+                }
+                return nextWordIDByOriginal;
+            // 只會有一個或沒有
+            case "nextWordIDByCorrect" :
+                ArrayList<String> nextWordIDByCorrect = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(
+                        Integer.parseInt(object.toString().split(":")[0])
+                        , Integer.parseInt(object.toString().split(":")[1]) + 1));
+                if (resultSet.next()) {
+                    nextWordIDByCorrect.add(resultSet.getObject(3).toString());
+                }
+                return nextWordIDByCorrect;
             // 只會有一個或沒有
             case "nextWordIDAndPos_WordID" :
                 ArrayList<String> nextWordIDAndPosWordIDList = new ArrayList<>();
@@ -87,17 +118,25 @@ public class OtherColumnExtraction {
                 }
                 return nextWordIDAndPosWordIDList;
             case "original" :
-                ArrayList<String> original = new ArrayList<>();
+                List<Map<String ,String>> original = new ArrayList<>();
+                Map<String, String> originalMap = new HashMap<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlBySentenceId(Integer.parseInt(object.toString())));
                 if (resultSet.next()) {
-                    original.add(resultSet.getObject(3).toString());
+                    originalMap.put(ConstantField.ORIGINAL_SENTENCE_ID, resultSet.getObject(1).toString());
+                    originalMap.put(ConstantField.ORIGINAL_ARTICLE_ID, resultSet.getObject(2).toString());
+                    originalMap.put(ConstantField.ORIGINAL_SENTENCE, resultSet.getObject(3).toString());
+                    original.add(originalMap);
                 }
                 return original;
             case "correct" :
-                ArrayList<String> correct = new ArrayList<>();
+                List<Map<String ,String>> correct = new ArrayList<>();
+                Map<String, String> correctMap = new HashMap<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlBySentenceID(Integer.parseInt(object.toString())));
                 if (resultSet.next()) {
-                    correct.add(resultSet.getObject(3).toString());
+                    correctMap.put(ConstantField.CORRECT_SENTENCE_ID, resultSet.getObject(1).toString());
+                    correctMap.put(ConstantField.CORRECT_ARTICLE_ID, resultSet.getObject(2).toString());
+                    correctMap.put(ConstantField.CORRECT_SENTENCE, resultSet.getObject(3).toString());
+                    correct.add(correctMap);
                 }
                 return correct;
             default:

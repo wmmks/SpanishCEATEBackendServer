@@ -1,6 +1,6 @@
 package controllers;
 
-import SearchType.Palabra;
+import Search.SearchPostProcessing;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 /**
  * Created by roye on 2017/4/24.
@@ -33,11 +32,10 @@ public class CeateBackendController extends Controller{
         return ok("HelloWorld");
     }
 
-    public Result getUserData()
-    {
+    public Result getUserData() {
         DatabaseController databaseController = new DatabaseController();
         JsonNode request = request().body().asJson();
-        int id = Integer.parseInt(request.findPath(ConstantField.userAndArticleId).toString());
+        int id = Integer.parseInt(request.findPath(ConstantField.userAndArticleID).toString());
         int systemType = Integer.parseInt(request.findPath(ConstantField.userAndArticleSystemType).textValue());
         JsonNode result = Json.newObject();
         ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getUserDataSqlByIdAndSystemType(id, systemType));
@@ -65,8 +63,11 @@ public class CeateBackendController extends Controller{
         }
         return ok(result);
     }
-    public Result updateUserData()
-    {
+
+    /**
+     * Check Page Update User Data Function.
+     */
+    public Result updateUserData() {
         DatabaseController databaseController = new DatabaseController();
         JsonNode request = request().body().asJson();
         JsonNode result;
@@ -89,28 +90,31 @@ public class CeateBackendController extends Controller{
     }
 
     /**
-     * Search Page.
+     * Search Page Extract Sentence List Function.
      */
-    public Result getSearchData() throws SQLException {
+    public Result getSearchData() {
+        JsonNode result = Json.newObject();
         JsonNode request = request().body().asJson();
         JSONObject userDataJsonObject = new JSONObject(request.toString());
-        ArrayList<String> originalList;
-        ArrayList<String> correctList;
-        String wordText = userDataJsonObject.getString(ConstantField.wordText);
-        String wordPOS = userDataJsonObject.getString(ConstantField.wordPOS);
-        String nextWordPOS = userDataJsonObject.getString(ConstantField.nextWordPOS);
-        Palabra palabra = new Palabra();
-        palabra.setPalabraSentence(wordText, wordPOS, nextWordPOS);
-        originalList = palabra.getOriginalList();
-        correctList = palabra.getCorrectList();
-        for (String original : originalList) {
-            System.out.println("original " + original);
+        String wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
+        String wordPOS = userDataJsonObject.getString(ConstantField.WORD_POS);
+        String nextWordPOS = userDataJsonObject.getString(ConstantField.NEXT_WORD_POS);
+        SearchPostProcessing searchPostProcessing = new SearchPostProcessing();
+        try {
+            result = searchPostProcessing.setSearchPostProcessing(wordText, wordPOS, nextWordPOS);
+        } catch (SQLException e) {
+            e.getErrorCode();
         }
-        for (String correct : correctList) {
-            System.out.println("correct " + correct);
-        }
-
-        JsonNode result = Json.parse(new JSONObject().put("message", "test").toString());
         return ok(result);
+    }
+
+    /**
+     * Search Page Extract Original Article and Correct Article Function.
+     */
+    public Result getSearchXMLResult() {
+        JsonNode request = request().body().asJson();
+        JSONObject userDataJsonObject = new JSONObject(request.toString());
+        String articleID = userDataJsonObject.getString(ConstantField.ARTICLE_ID);
+        return null;
     }
 }

@@ -24,12 +24,21 @@ public class SqlCommandComposer {
         String sql = "select * from words_table as a where a.text='" + text + "' and a.pos='" + pos + "'";
         return sql;
     }
-    public String getOtherColumnSqlByWordId(int id) {
+    public String getOriginalSqlByWordId(int id) {
         String sql = "select * from original_words_Index_table as a where a.word_id='" + id + "'";
         return sql;
     }
-    public String getOtherColumnSqlByWordId(int sentenceID, int position) {
+    public String getCorrectSqlByWordId(int id) {
+        String sql = "select * from corrected_words_Index_table as a where a.word_id='" + id + "'";
+        return sql;
+    }
+    public String getOriginalSqlByWordId(int sentenceID, int position) {
         String sql = "select * from original_words_Index_table as a where a.sentence_id='"
+                + sentenceID + "'" + "and a.position='" + position + "'";
+        return sql;
+    }
+    public String getCorrectSqlByWordId(int sentenceID, int position) {
+        String sql = "select * from corrected_words_Index_table as a where a.sentence_id='"
                 + sentenceID + "'" + "and a.position='" + position + "'";
         return sql;
     }
