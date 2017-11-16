@@ -9,5 +9,6 @@ public class XMLArticleConstantTable {
     public static String xmlCorrectedTextTag = "comment";
     public static String xmlIgnoredTag = "000";
     public static Boolean xmlErrorFlag = false;
+    public static String sentenceTag = "@sentence@";
 }
 

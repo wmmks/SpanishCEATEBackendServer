@@ -1,12 +1,14 @@
 package controllers;
 
 import Search.SearchPostProcessing;
+import Search.XMLMatchProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
 import constantField.XMLArticleConstantTable;
 import databaseUtil.DatabaseController;
 import json.JSONObject;
+import org.dom4j.DocumentException;
 import play.libs.Json;
 import play.mvc.*;
 
@@ -112,9 +114,30 @@ public class CeateBackendController extends Controller{
      * Search Page Extract Original Article and Correct Article Function.
      */
     public Result getSearchXMLResult() {
+        DatabaseController databaseController = new DatabaseController();
         JsonNode request = request().body().asJson();
         JSONObject userDataJsonObject = new JSONObject(request.toString());
         String articleID = userDataJsonObject.getString(ConstantField.ARTICLE_ID);
-        return null;
+        XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
+        SqlCommandComposer sqlCommandComposer = new SqlCommandComposer();
+        ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID));
+        String xml = "";
+        try {
+            if (resultSet.next()) {
+                xml = resultSet.getString(1);
+            }
+        } catch (SQLException e) {
+            e.getErrorCode();
+        }
+        try {
+            xmlMatchProcessor.setXMLMatchParser(xml);
+        } catch (DocumentException e) {
+            e.getMessage();
+        }
+        JSONObject resultJsonObject = new JSONObject();
+        resultJsonObject.put(ConstantField.ORIGINAL_ARTICLE, xmlMatchProcessor.getMatchingFormat().split("@")[1]);
+        resultJsonObject.put(ConstantField.CORRECT_ARTICLE, xmlMatchProcessor.getMatchingFormat().split("@")[0]);
+        JsonNode result = Json.parse(resultJsonObject.toString());
+        return ok(result);
     }
 }

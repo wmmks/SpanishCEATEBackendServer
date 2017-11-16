@@ -48,7 +48,7 @@ public class SearchPostProcessing {
                         original_article_id = original.get(m);
                     }
                     resultJsonObject.put(count + ""
-                            ,"<a href = \"/showarticle.php?" + "&ARTICLE_ID=" + original_article_id
+                            ,"<a href = \"/cate/showarticle.php?" + "&articleID=" + original_article_id
                                     + "&sentenceID=" + original_sentence_id + "&query=" + wordText
                                     + "\">" + original_sentence + "</a>");
                 }
@@ -68,7 +68,7 @@ public class SearchPostProcessing {
                         correct_article_id = correct.get(m);
                     }
                     resultJsonObject.put(count + ""
-                            ,"<a href = \"/showarticle.php?" + "&ARTICLE_ID=" + correct_article_id
+                            ,"<a href = \"/cate/showarticle.php?" + "&articleID=" + correct_article_id
                                     + "&sentenceID=" + correct_sentence_id + "&query=" + wordText
                                     + "\">" + correct_sentence + "</a>");
                 }

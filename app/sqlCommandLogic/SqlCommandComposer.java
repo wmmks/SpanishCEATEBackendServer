@@ -55,6 +55,10 @@ public class SqlCommandComposer {
         String sql = "select * from corrected_sentences_content as a where a.id='" + id + "'";
         return sql;
     }
+    public String getXMLByArticleID(String id) {
+        String sql = "select xml_content from articles_content where id='" + id + "'";
+        return sql;
+    }
     public UserData getUserData(JSONObject userDataJsonObject)
     {
         String sql="";
