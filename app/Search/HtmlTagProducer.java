@@ -4,50 +4,63 @@ package Search;
  */
 public class HtmlTagProducer {
 
-    public String getParagraphTag(Integer ID, Boolean correct) {
-        String paragraphID;
-        String originalParagraphID = "ori" + ID;
-        String correctParagraphID = "cor" + ID;
+    public String getSentenceTag(Integer ID, Boolean correct,Boolean markSentence) {
+        String sentenceID;
+        String originalSentenceID = "ori" + ID;
+        String correctSentenceID = "cor" + ID;
         if (correct) {
-            paragraphID = doubleQuotation(correctParagraphID);
+            sentenceID = doubleQuotation(correctSentenceID);
 
         } else {
-            paragraphID = doubleQuotation(originalParagraphID);
+            sentenceID = doubleQuotation(originalSentenceID);
         }
 
-        String tag = "<span onmouseover=\"changeColor(" + singleQuotation(originalParagraphID) + "," +
-                singleQuotation(correctParagraphID) + ", '#AAAAAA', '#AAAAAA', false)\" " +
-                "onmouseout=\"changeColor(" + singleQuotation(originalParagraphID) + "," +
-                singleQuotation(correctParagraphID) + ", '#000000', '#000000', false)\" " +
-                "id=" + paragraphID + " style=\"color: rgb(0, 0, 0);\">";
+        String tag;
+
+        if (!markSentence) {
+            tag = "<span onmouseover=\"changeColor(" + singleQuotation(originalSentenceID) + "," +
+                    singleQuotation(correctSentenceID) + ", '#AAAAAA', '#AAAAAA', false)\" " +
+                    "onmouseout=\"changeColor(" + singleQuotation(originalSentenceID) + "," +
+                    singleQuotation(correctSentenceID) + ", '#000000', '#000000', false)\" " +
+                    "id=" + sentenceID + " style=\"color: rgb(0, 0, 0);\">";
+        } else {
+            tag = "<span style=\"color: blue;\"><u>";
+        }
+
+
         return tag;
     }
 
-    public  String getWordTag (Integer ID, String word, Boolean correct) {
+    public  String getWordTag (Integer ID, String word, Boolean correct,Boolean markSentence, String query) {
         String wordID;
         String color;
+        String tag;
         String originalWordID = "om" + ID;
         String correctWordID = "cm" + ID;
         if (correct) {
             wordID = doubleQuotation(correctWordID);
             color = "color: rgb(0, 0, 0);";
-
         } else {
             wordID = doubleQuotation(originalWordID);
             color = "color: rgb(228, 102, 80);";
 
         }
-
         if (word.equals("")) {
             word = " ";
+        } else if (word.contains(query)) {
+            String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
+            word = word.replaceAll(query, queryTag);
         }
-
-        String tag = "<span style=\"color:#000000; cursor:pointer;\">" +
-                "<span onmouseover=\"changeColor(" + singleQuotation(originalWordID) + "," +
-                singleQuotation(correctWordID) + ", '#AA0000', '#66AA00', true)\" " +
-                "onmouseout=\"changeColor(" + singleQuotation(originalWordID) + "," +
-                singleQuotation(correctWordID) + ", '#E46650', '#000000', false)\" " +
-                "id=" + wordID + " style=" + doubleQuotation(color) + ">" + word + "</span></span>";
+        if (!markSentence) {
+            tag = "<span style=\"color:#000000; cursor:pointer;\">" +
+                    "<span onmouseover=\"changeColor(" + singleQuotation(originalWordID) + "," +
+                    singleQuotation(correctWordID) + ", '#AA0000', '#66AA00', true)\" " +
+                    "onmouseout=\"changeColor(" + singleQuotation(originalWordID) + "," +
+                    singleQuotation(correctWordID) + ", '#E46650', '#000000', false)\" " +
+                    "id=" + wordID + " style=" + doubleQuotation(color) + ">" + word + "</span></span>";
+        } else {
+            tag = word;
+        }
         return tag;
     }
 

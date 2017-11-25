@@ -1,6 +1,6 @@
 package controllers;
 
-import Search.SearchPostProcessing;
+import Search.SearchProcessing;
 import Search.XMLMatchProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
@@ -27,7 +27,6 @@ public class CeateBackendController extends Controller{
 
     @Inject
     SqlCommandComposer sqlCommandComposer;
-
 
     public Result HelloWorld()
     {
@@ -97,13 +96,9 @@ public class CeateBackendController extends Controller{
     public Result getSearchData() {
         JsonNode result = Json.newObject();
         JsonNode request = request().body().asJson();
-        JSONObject userDataJsonObject = new JSONObject(request.toString());
-        String wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
-        String wordPOS = userDataJsonObject.getString(ConstantField.WORD_POS);
-        String nextWordPOS = userDataJsonObject.getString(ConstantField.NEXT_WORD_POS);
-        SearchPostProcessing searchPostProcessing = new SearchPostProcessing();
+        SearchProcessing searchPostProcessing = new SearchProcessing();
         try {
-            result = searchPostProcessing.setSearchPostProcessing(wordText, wordPOS, nextWordPOS);
+            result = searchPostProcessing.setSearchProcessing(new JSONObject(request.toString()));
         } catch (SQLException e) {
             e.getErrorCode();
         }
@@ -118,11 +113,18 @@ public class CeateBackendController extends Controller{
         JsonNode request = request().body().asJson();
         JSONObject userDataJsonObject = new JSONObject(request.toString());
         String articleID = userDataJsonObject.getString(ConstantField.ARTICLE_ID);
+        String sentenceID = userDataJsonObject.getString(ConstantField.SENTENCE_ID);
+        String query = userDataJsonObject.getString(ConstantField.WORD_TEXT);
         XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
         SqlCommandComposer sqlCommandComposer = new SqlCommandComposer();
         ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID));
+        ResultSet minResultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSentenceIDByArticleID(articleID));
+        int minID = 0;
         String xml = "";
         try {
+            if (minResultSet.next()) {
+                minID = minResultSet.getInt(1);
+            }
             if (resultSet.next()) {
                 xml = resultSet.getString(1);
             }
@@ -135,9 +137,8 @@ public class CeateBackendController extends Controller{
             e.getMessage();
         }
         JSONObject resultJsonObject = new JSONObject();
-        resultJsonObject.put(ConstantField.ORIGINAL_ARTICLE, xmlMatchProcessor.getMatchingFormat().split("@")[1]);
-        resultJsonObject.put(ConstantField.CORRECT_ARTICLE, xmlMatchProcessor.getMatchingFormat().split("@")[0]);
-        JsonNode result = Json.parse(resultJsonObject.toString());
-        return ok(result);
+        resultJsonObject.put(ConstantField.ORIGINAL_ARTICLE, xmlMatchProcessor.getMatchingFormat((Integer.parseInt(sentenceID) - minID + 1) + "", query).split("@")[1]);
+        resultJsonObject.put(ConstantField.CORRECT_ARTICLE, xmlMatchProcessor.getMatchingFormat((Integer.parseInt(sentenceID) - minID + 1) + "", query).split("@")[0]);
+        return ok(Json.parse(resultJsonObject.toString()));
     }
 }

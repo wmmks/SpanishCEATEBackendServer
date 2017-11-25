@@ -139,6 +139,15 @@ public class OtherColumnExtraction {
                     correct.add(correctMap);
                 }
                 return correct;
+            case "judgeOtherCondition" :
+                List<String> boolen = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getExistByOtherColumnCondition(object));
+                if (resultSet.next()) {
+                    boolen.add("true");
+                } else {
+                    boolen.add("false");
+                }
+                return boolen;
             default:
                 return new ArrayList<>();
         }

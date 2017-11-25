@@ -1,7 +1,10 @@
 package Search;
 
+import constantField.DatabaseColumnNameVariableTable;
 import extractContent.OtherColumnExtraction;
+import json.JSONObject;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +29,16 @@ class SearchType {
     private List<List<Map<String, String>>> correctList;
 
     /**
+     *
+     */
+    private OtherColumnExtraction otherColumnExtraction = new OtherColumnExtraction();
+
+    /**
      * Produce Query Relation for 3 type.
      * @param wordText query
      * @throws SQLException SQL Exception
      */
     void setPalabraSentence(String wordText, String wordPOS, String nextWordPOS) throws SQLException {
-        OtherColumnExtraction otherColumnExtraction = new OtherColumnExtraction();
         List<List<String>> wordIDListInList = new ArrayList<>();
         List<List<String>> wordIDListInListByOriginal;
         List<List<String>> wordIDListInListByCorrect;
@@ -103,6 +110,34 @@ class SearchType {
                 correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, "correct"));
             }
         }
+    }
+
+    /**
+     * Other Column Condition judge Article Exists.
+     */
+    boolean judgeExists(String articleID, JSONObject userDataJsonObject) throws SQLException {
+        List<String> otherCondition = new ArrayList<>();
+        String learningHours = userDataJsonObject.getString(DatabaseColumnNameVariableTable.LEARNING_HOURS);
+        String gender = userDataJsonObject.getString(DatabaseColumnNameVariableTable.GENDER);
+        String department = userDataJsonObject.getString(DatabaseColumnNameVariableTable.DEPARTMENT);
+        String specialExperience = userDataJsonObject.getString(DatabaseColumnNameVariableTable.SPECIAL_EXPERIENCE);
+        String numberOfWords = userDataJsonObject.getString(DatabaseColumnNameVariableTable.NUMBER_Of_WORDS);
+        String articleStyle = userDataJsonObject.getString(DatabaseColumnNameVariableTable.ARTICLE_STYLE);
+        String articleTopic = userDataJsonObject.getString(DatabaseColumnNameVariableTable.ARTICLE_TOPIC);
+        String writtingLocation = userDataJsonObject.getString(DatabaseColumnNameVariableTable.WRITTING_LOCATION);
+        String submittedYear = userDataJsonObject.getString(DatabaseColumnNameVariableTable.SUBMITTED_YEAR);
+        otherCondition.add(articleID);
+        otherCondition.add(learningHours);
+        otherCondition.add(gender);
+        otherCondition.add(department);
+        otherCondition.add(specialExperience);
+        otherCondition.add(numberOfWords);
+        otherCondition.add(articleStyle);
+        otherCondition.add(articleTopic);
+        otherCondition.add(writtingLocation);
+        otherCondition.add(submittedYear);
+        List boolen = otherColumnExtraction.getOtherColumnExtraction(otherCondition, "judgeOtherCondition");
+        return boolen.get(0).equals("true");
     }
 
     /**

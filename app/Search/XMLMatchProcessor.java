@@ -168,29 +168,45 @@ public class XMLMatchProcessor {
         return words;
     }
 
-    public String getMatchingFormat () {
+    public String getMatchingFormat (String sentenceID, String query) {
         HtmlTagProducer tagProducer = new HtmlTagProducer();
         StringBuilder htmlCorrect = new StringBuilder();
         StringBuilder htmlOriginal = new StringBuilder();
-        int pid = 1;
+        int sid = 1;
         int wid = 1;
-        for (ArrayList<HashMap> p: article) {
-            htmlCorrect.append(tagProducer.getParagraphTag(pid, true));
-            htmlOriginal.append(tagProducer.getParagraphTag(pid, false));
-            for (HashMap w: p) {
+        boolean markSentence = false;
+        for (ArrayList<HashMap> s: article) {
+            if (String.valueOf(sid).equals(sentenceID)) {
+                markSentence = true;
+            }
+            htmlCorrect.append(tagProducer.getSentenceTag(sid, true, markSentence));
+            htmlOriginal.append(tagProducer.getSentenceTag(sid, false, markSentence));
+            for (HashMap w: s) {
                 if (!w.get(0).equals("")) {
-                    htmlCorrect.append(w.get(0));
-                    htmlOriginal.append(w.get(0));
+                    String word;
+                    if (w.get(0).toString().contains(query)) {
+                        String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
+                        word = w.get(0).toString().replaceAll(query, queryTag);
+                    } else {
+                        word = w.get(0).toString();
+                    }
+                    htmlCorrect.append(word);
+                    htmlOriginal.append(word);
                 }
-                if (!w.get(1).equals("") || !w.get(2).equals("")) {
-                    htmlCorrect.append(tagProducer.getWordTag(wid, w.get(1).toString(),true));
-                    htmlOriginal.append(tagProducer.getWordTag(wid,w.get(2).toString(),false));
+                if ((!w.get(1).equals("") || !w.get(2).equals(""))) {
+                    htmlCorrect.append(tagProducer.getWordTag(wid, w.get(1).toString(),true, markSentence, query));
+                    htmlOriginal.append(tagProducer.getWordTag(wid,w.get(2).toString(),false, markSentence, query));
                 }
                 wid++;
             }
+            if (markSentence) {
+                htmlCorrect.append("</u>");
+                htmlOriginal.append("</u>");
+                markSentence = false;
+            }
             htmlCorrect.append("</span>");
             htmlOriginal.append("</span>");
-            pid++;
+            sid++;
         }
         return htmlCorrect.toString() + "@" + htmlOriginal.toString();
     }

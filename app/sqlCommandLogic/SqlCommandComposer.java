@@ -6,6 +6,7 @@ import extractContent.ExtractArticleContentColumnObject;
 import json.JSONObject;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -57,6 +58,20 @@ public class SqlCommandComposer {
     }
     public String getXMLByArticleID(String id) {
         String sql = "select xml_content from articles_content where id='" + id + "'";
+        return sql;
+    }
+    public String getCorrectSentenceIDByArticleID(String articleID) {
+        String sql = "select min(a.id) from corrected_sentences_content as a where a.article_id ='" + articleID + "' UNION select min(b.id) from original_sentences_content as b where b.article_id ='" + articleID + "'";
+        return sql;
+    }
+    public String getExistByOtherColumnCondition(Object object) {
+        List<String> condition = (List<String>) object;
+        String sql = "select * from users_information as a, users_special_experience as b, articles_information as c " +
+                "where a.id = '" + condition.get(0) + "' and a.id = b.id and b.id = c.id and a.learning_hours = '" + condition.get(1) +
+                "' and a.gender = '" + condition.get(2) + "' and a.department = '" + condition.get(3) + "' and b.special_experience = '" +
+                condition.get(4) + "' and c.number_of_words = '" + condition.get(5) + "' and c.article_style = '" + condition.get(6) +
+                "' and c.article_topic = '" + condition.get(7) + "' and c.writting_location = '" + condition.get(8) +
+                "' and c.submitted_year = '" + condition.get(9) + "'";
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject)

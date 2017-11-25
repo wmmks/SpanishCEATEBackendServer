@@ -32,17 +32,17 @@ public class DatabaseColumnNameVariableTable {
          *articles_information column Name List: the column name of articles_information table
          */
 
-    public static String submittedYear = "submitted_year";
+    public static String SUBMITTED_YEAR = "submitted_year";
     public static String submittedMonth = "submitted_month";
     public static String haveSubmitted = "have_submitted";
-    public static String writtingLocation = "writting_location";
-    public static String articleStyle = "article_style";
-    public static String articleTopic = "article_topic";
+    public static String WRITTING_LOCATION = "writting_location";
+    public static String ARTICLE_STYLE = "article_style";
+    public static String ARTICLE_TOPIC = "article_topic";
     public static String articleTitle = "article_title";
-    public static String numberOfWords = "number_of_words";
+    public static String NUMBER_Of_WORDS = "number_of_words";
     public static String longMin = "long_min";
     public static String longSeg = "long_seg";
-    public static String[] articlesInformationColumnNameList = {submittedYear, submittedMonth, haveSubmitted, writtingLocation, articleStyle, articleTopic, articleTitle, numberOfWords, longMin, longSeg};
+    public static String[] articlesInformationColumnNameList = {SUBMITTED_YEAR, submittedMonth, haveSubmitted, WRITTING_LOCATION, ARTICLE_STYLE, ARTICLE_TOPIC, articleTitle, NUMBER_Of_WORDS, longMin, longSeg};
     /**
         * user_information column Name List: the column name of user_information table
          * */
@@ -50,14 +50,14 @@ public class DatabaseColumnNameVariableTable {
     public static String idUnderYear = "id_under_year";
     public static String chineseName = "chinese_name";
     public static String spanishName = "spanish_name";
-    public static String gender = "gender";
+    public static String GENDER = "gender";
     public static String schoolName = "school_name";
     public static String studentId = "student_id";
     public static String schoolSystem = "school_system";
-    public static String department = "department";
+    public static String DEPARTMENT = "department";
     public static String grade = "grade";
     public static String group = "group_type";
-    public static String learningHours = "learning_hours";
+    public static String LEARNING_HOURS = "learning_hours";
     public static String learningYears = "learning_years";
     public static String learningMonths = "learning_months";
     public static String wisconsinNumberOfCorrect = "wisconsin_number_of_correct";
@@ -65,16 +65,16 @@ public class DatabaseColumnNameVariableTable {
     public static String dateOfAgreementSubmit = "date_of_agreement_submit";
     public static String level = "level";
     public static String collector = "collector";
-    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, gender, schoolName, studentId, schoolSystem, department, grade, group, learningHours, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit, level, collector};
+    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, GENDER, schoolName, studentId, schoolSystem, DEPARTMENT, grade, group, LEARNING_HOURS, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit, level, collector};
     /*
         *  user_special_information column Name List: the column name of special_information table;
         * */
     public static String motherTongue = "mother_tongue";
-    public static String specialExperience = "special_exeperience";
+    public static String SPECIAL_EXPERIENCE = "special_experience";
     public static String spanishRelatedResident = "spanish_related_resident";
     public static String spanishRelatedExchange = "spanish_related_exchange";
     public static String spanishDepartmentExchange = "spanish_department_exchange";
-    public static String[] userSpecialInformationColumnNameList = {motherTongue,specialExperience,spanishRelatedResident,spanishRelatedExchange,spanishDepartmentExchange};
+    public static String[] userSpecialInformationColumnNameList = {motherTongue, SPECIAL_EXPERIENCE,spanishRelatedResident,spanishRelatedExchange,spanishDepartmentExchange};
     /*
         *class_information column Name List: the column name of class_information table;
          *  */
