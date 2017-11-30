@@ -67,11 +67,16 @@ public class SqlCommandComposer {
     public String getExistByOtherColumnCondition(Object object) {
         List<String> condition = (List<String>) object;
         String sql = "select * from users_information as a, users_special_experience as b, articles_information as c " +
-                "where a.id = '" + condition.get(0) + "' and a.id = b.id and b.id = c.id and a.learning_hours = '" + condition.get(1) +
-                "' and a.gender = '" + condition.get(2) + "' and a.department = '" + condition.get(3) + "' and b.special_experience = '" +
-                condition.get(4) + "' and c.number_of_words = '" + condition.get(5) + "' and c.article_style = '" + condition.get(6) +
-                "' and c.article_topic = '" + condition.get(7) + "' and c.writting_location = '" + condition.get(8) +
-                "' and c.submitted_year = '" + condition.get(9) + "'";
+                "where a.id = '" + condition.get(0) + "' and a.id = b.id and b.id = c.id and a.learning_hours BETWEEN '" +
+                condition.get(1).split("~")[0] + "' and '" + condition.get(1).split("~")[1] + "' and a.gender = '" +
+                condition.get(2) + "' and a.department = '" +
+                condition.get(3) + "' and b.special_experience = '" +
+                condition.get(4).split("~")[0] + "' and '" + condition.get(4).split("~")[1] + "'and c.number_of_words BETWEEN '" +
+                condition.get(5).split("~")[0] + "' and '" + condition.get(5).split("~")[1] + "'and c.article_style BETWEEN '" +
+                condition.get(6).split("~")[0] + "' and '" + condition.get(6).split("~")[1] + "'and c.article_topic BETWEEN '" +
+                condition.get(7).split("~")[0] + "' and '" + condition.get(7).split("~")[1] + "'and c.writting_location BETWEEN '" +
+                condition.get(8).split("~")[0] + "' and '" + condition.get(8).split("~")[1] + "'and c.submitted_year BETWEEN '" +
+                condition.get(9).split("~")[0] + "' and '" + condition.get(9).split("~")[1] + "'";
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject)
