@@ -23,7 +23,7 @@ import java.sql.SQLException;
 /**
  * Created by roye on 2017/4/24.
  */
-public class CeateBackendController extends Controller{
+public class CeateBackendController extends Controller {
 
     @Inject
     SqlCommandComposer sqlCommandComposer;
@@ -91,7 +91,7 @@ public class CeateBackendController extends Controller{
     }
 
     /**
-     * Search Page Extract Sentence List Function.
+     * Search Page Extract Sentence Link List Function.
      */
     public Result getSearchData() {
         JsonNode result = Json.newObject();
@@ -106,6 +106,18 @@ public class CeateBackendController extends Controller{
     }
 
     /**
+     * Search Page Extract Stemming Link List Function.
+     */
+    public Result getSearchLemaData() {
+        /*DatabaseController databaseController = new DatabaseController();
+        JsonNode request = request().body().asJson();
+        JSONObject userDataJsonObject = new JSONObject(request.toString());
+        String query = userDataJsonObject.getString(DatabaseColumnNameVariableTable.LEMMA);
+        databaseController.execSelect();*/
+        return null;
+    }
+
+    /**
      * Search Page Extract Original Article and Correct Article Function.
      */
     public Result getSearchXMLResult() {
@@ -115,6 +127,7 @@ public class CeateBackendController extends Controller{
         String articleID = userDataJsonObject.getString(ConstantField.ARTICLE_ID);
         String sentenceID = userDataJsonObject.getString(ConstantField.SENTENCE_ID);
         String query = userDataJsonObject.getString(ConstantField.WORD_TEXT);
+        String source = userDataJsonObject.getString(ConstantField.SOURCE);
         XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
         SqlCommandComposer sqlCommandComposer = new SqlCommandComposer();
         ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID));

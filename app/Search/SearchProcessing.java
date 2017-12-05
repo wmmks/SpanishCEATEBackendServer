@@ -51,7 +51,7 @@ public class SearchProcessing {
                             } else {
                                 resultJsonObject.put(count + ""
                                         ,"<a href = \"/cate/showArticle.php?" + "&articleID=" + original_article_id
-                                                + "&sentenceID=" + original_sentence_id + "&query=" + wordText
+                                                + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source=original"
                                                 + "\">" + original_sentence + "</a>");
                             }
                         } else if (m.equals(ConstantField.ORIGINAL_SENTENCE)) {
@@ -76,7 +76,7 @@ public class SearchProcessing {
                             } else {
                                 resultJsonObject.put(count + ""
                                         ,"<a href = \"/cate/showArticle.php?" + "&articleID=" + correct_article_id
-                                                + "&sentenceID=" + correct_sentence_id + "&query=" + wordText
+                                                + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source=correct"
                                                 + "\">" + correct_sentence + "</a>");
                             }
                         } else if (m.equals(ConstantField.CORRECT_SENTENCE)) {

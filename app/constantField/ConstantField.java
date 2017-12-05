@@ -22,4 +22,5 @@ public class ConstantField {
     static public String CORRECT_ARTICLE_ID = "correct_article_id";
     static public String CORRECT_ARTICLE = "correct_article";
     static public String ORIGINAL_OR_CORRECT = "original_or_correct";
+    static public String SOURCE = "source";
 }

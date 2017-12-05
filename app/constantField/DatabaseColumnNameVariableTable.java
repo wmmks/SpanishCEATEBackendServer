@@ -86,10 +86,14 @@ public class DatabaseColumnNameVariableTable {
     public static String teacher = "teacher";
     public static String[] classInformationColumnNameList = {className,classSchoolSystem,classDepartment,classGrade,classGroutp,teacher};
     /**
-        *articles_content column Name List: the column name of articles_content table;
-        */
+     * articles_content column Name List: the column name of articles_content table;
+     */
     public static String originalArticleText = "original_article_text";
     public static String correctedArticleText = "corrected_article_text";
     public static String xmlContent = "xml_content";
     public static String[] articleContentColumnNameList = {originalArticleText, correctedArticleText, xmlContent};
+    /**
+     * words_table.
+     */
+    public static String LEMMA = "lemma";
 }
