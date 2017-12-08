@@ -1,10 +1,10 @@
 package Search;
 
+import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
 import extractContent.OtherColumnExtraction;
 import json.JSONObject;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +29,23 @@ class SearchType {
     private List<List<Map<String, String>>> correctList;
 
     /**
-     *
+     * Lemma List.
+     */
+    private List lemmaList;
+
+    /**
+     * Extract Other Column.
      */
     private OtherColumnExtraction otherColumnExtraction = new OtherColumnExtraction();
 
     /**
      * Produce Query Relation for 3 type.
      * @param wordText query
+     * @param wordPOS word pos
+     * @param nextWordPOS next word pos
      * @throws SQLException SQL Exception
      */
-    void setPalabraSentence(String wordText, String wordPOS, String nextWordPOS) throws SQLException {
+    void setSentenceOfPalabra(String wordText, String wordPOS, String nextWordPOS) throws SQLException {
         List<List<String>> wordIDListInList = new ArrayList<>();
         List<List<String>> wordIDListInListByOriginal;
         List<List<String>> wordIDListInListByCorrect;
@@ -50,66 +57,75 @@ class SearchType {
         correctList = new ArrayList<>();
         // Palabra POS POS
         if (!nextWordPOS.equals("") && !wordPOS.equals("") && !wordText.equals("")) {
-            List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, "textAndPos_WordID");
+            List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
             for (String wordId : wordIDList) {
-                sentenceIDByOriginal = otherColumnExtraction.getOtherColumnExtraction(wordId, "sentenceIDAndPositionByOriginal");
+                sentenceIDByOriginal = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_ORIGINAL);
                 for (String sentenceID : sentenceIDByOriginal) {
-                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, "nextWordIDByOriginal").isEmpty()) {
-                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, "nextWordIDByOriginal").get(0).toString();
-                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, "nextWordIDAndPos_WordID").isEmpty()) {
+                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).isEmpty()) {
+                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).get(0).toString();
+                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
                             sentenceIDInListByOriginal.add(sentenceID.split(":")[0]);
                         }
                     }
                 }
-                sentenceIDByCorrect = otherColumnExtraction.getOtherColumnExtraction(wordId, "sentenceIDAndPositionByCorrect");
+                sentenceIDByCorrect = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_CORRECT);
                 for (String sentenceID : sentenceIDByCorrect) {
-                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, "nextWordIDByCorrect").isEmpty()) {
-                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, "nextWordIDByCorrect").get(0).toString();
-                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, "nextWordIDAndPos_WordID").isEmpty()) {
+                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).isEmpty()) {
+                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).get(0).toString();
+                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
                             sentenceIDInListByCorrect.add(sentenceID.split(":")[0]);
                         }
                     }
                 }
             }
         } else if (!wordPOS.equals("") && !wordText.equals("")) { // Palabra POS
-            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, "textAndPos_WordID"));
+            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID));
             wordIDListInListByOriginal = wordIDListInList;
             wordIDListInListByCorrect = wordIDListInList;
             for (List<String> wordIDList : wordIDListInListByOriginal) {
                 for (String wordID : wordIDList) {
-                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, "sentenceIDByOriginal"));
+                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_ORIGINAL));
                 }
             }
             for (List<String> wordIDList : wordIDListInListByCorrect) {
                 for (String wordID : wordIDList) {
-                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, "sentenceIDByCorrect"));
+                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_CORRECT));
                 }
             }
         } else { // Palabra
-            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText, "wordID"));
+            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText, ConstantField.WORD_ID));
             wordIDListInListByOriginal = wordIDListInList;
             wordIDListInListByCorrect = wordIDListInList;
             for (List<String> wordIDList : wordIDListInListByOriginal) {
                 for (String wordID : wordIDList) {
-                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, "sentenceIDByOriginal"));
+                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_ORIGINAL));
                 }
             }
             for (List<String> wordIDList : wordIDListInListByCorrect) {
                 for (String wordID : wordIDList) {
-                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, "sentenceIDByCorrect"));
+                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_CORRECT));
                 }
             }
         }
         for (String sentenceID : sentenceIDInListByOriginal) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, "original").size() != 0) {
-                originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, "original"));
+            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.ORIGINAL).size() != 0) {
+                originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.ORIGINAL));
             }
         }
         for (String sentenceID : sentenceIDInListByCorrect) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, "correct").size() != 0) {
-                correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, "correct"));
+            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.CORRECT).size() != 0) {
+                correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.CORRECT));
             }
         }
+    }
+
+    /**
+     * Produce Query Relation for 1 type.
+     * @param lemma lemma
+     * @throws SQLException SQL Exception
+     */
+    void setLemmaOfPalabra(String lemma) throws SQLException {
+        lemmaList = otherColumnExtraction.getOtherColumnExtraction(lemma, DatabaseColumnNameVariableTable.LEMMA);
     }
 
     /**
@@ -124,7 +140,7 @@ class SearchType {
         String numberOfWords = userDataJsonObject.getString(DatabaseColumnNameVariableTable.NUMBER_Of_WORDS);
         String articleStyle = userDataJsonObject.getString(DatabaseColumnNameVariableTable.ARTICLE_STYLE);
         String articleTopic = userDataJsonObject.getString(DatabaseColumnNameVariableTable.ARTICLE_TOPIC);
-        String writtingLocation = userDataJsonObject.getString(DatabaseColumnNameVariableTable.WRITTING_LOCATION);
+        String writingLocation = userDataJsonObject.getString(DatabaseColumnNameVariableTable.WRITING_LOCATION);
         String submittedYear = userDataJsonObject.getString(DatabaseColumnNameVariableTable.SUBMITTED_YEAR);
         otherCondition.add(articleID);
         otherCondition.add(learningHours);
@@ -134,10 +150,10 @@ class SearchType {
         otherCondition.add(numberOfWords);
         otherCondition.add(articleStyle);
         otherCondition.add(articleTopic);
-        otherCondition.add(writtingLocation);
+        otherCondition.add(writingLocation);
         otherCondition.add(submittedYear);
-        List boolen = otherColumnExtraction.getOtherColumnExtraction(otherCondition, "judgeOtherCondition");
-        return boolen.get(0).equals("true");
+        List booleanList = otherColumnExtraction.getOtherColumnExtraction(otherCondition, ConstantField.JUDGE_OTHER_CONDITION);
+        return booleanList.get(0).equals(true);
     }
 
     /**
@@ -154,5 +170,13 @@ class SearchType {
      */
     List getCorrectList() {
         return correctList;
+    }
+
+    /**
+     * Get Correct List.
+     * @return correctList
+     */
+    List getLemmaList() {
+        return lemmaList;
     }
 }

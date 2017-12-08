@@ -1,6 +1,7 @@
 package extractContent;
 
 import constantField.ConstantField;
+import constantField.DatabaseColumnNameVariableTable;
 import databaseUtil.DatabaseController;
 import sqlCommandLogic.SqlCommandComposer;
 
@@ -36,7 +37,7 @@ public class OtherColumnExtraction {
     public List getOtherColumnExtraction(Object object, String flag) throws SQLException {
         switch (flag) {
             // 會出現 0~多
-            case "wordID" :
+            case ConstantField.WORD_ID:
                 List<String> wordIDList = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByText(object.toString()));
                 while (resultSet.next()) {
@@ -44,7 +45,7 @@ public class OtherColumnExtraction {
                 }
                 return wordIDList;
             // 只會出現一個或沒有
-            case "textAndPos_WordID" :
+            case ConstantField.TEXT_AND_POS_WORD_ID :
                 List<String> textAndPosWordIDList = new ArrayList<>();
                 String[] textAndPosWordID = object.toString().split(":");
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByTextAndPOS
@@ -54,7 +55,7 @@ public class OtherColumnExtraction {
                 }
                 return textAndPosWordIDList;
             // 會出現 0~多
-            case "sentenceIDByOriginal" :
+            case ConstantField.SENTENCE_ID_BY_ORIGINAL :
                 ArrayList<String> sentenceIDByOriginal = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
@@ -62,7 +63,7 @@ public class OtherColumnExtraction {
                 }
                 return sentenceIDByOriginal;
             // 會出現 0~多
-            case "sentenceIDByCorrect" :
+            case ConstantField.SENTENCE_ID_BY_CORRECT :
                 ArrayList<String> sentenceIDByCorrect = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
@@ -70,7 +71,7 @@ public class OtherColumnExtraction {
                 }
                 return sentenceIDByCorrect;
             // 會出現 0~多
-            case "sentenceIDAndPositionByOriginal" :
+            case ConstantField.SENTENCE_ID_AND_POSITION_BY_ORIGINAL:
                 ArrayList<String> sentenceIDAndPositionByOriginal = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
@@ -79,7 +80,7 @@ public class OtherColumnExtraction {
                 }
                 return sentenceIDAndPositionByOriginal;
             // 會出現 0~多
-            case "sentenceIDAndPositionByCorrect" :
+            case ConstantField.SENTENCE_ID_AND_POSITION_BY_CORRECT:
                 ArrayList<String> sentenceIDAndPositionByCorrect = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
@@ -88,7 +89,7 @@ public class OtherColumnExtraction {
                 }
                 return sentenceIDAndPositionByCorrect;
             // 只會有一個或沒有
-            case "nextWordIDByOriginal" :
+            case ConstantField.NEXT_WORD_ID_BY_ORIGINAL :
                 ArrayList<String> nextWordIDByOriginal = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(
                         Integer.parseInt(object.toString().split(":")[0])
@@ -98,7 +99,7 @@ public class OtherColumnExtraction {
                 }
                 return nextWordIDByOriginal;
             // 只會有一個或沒有
-            case "nextWordIDByCorrect" :
+            case ConstantField.NEXT_WORD_ID_BY_CORRECT :
                 ArrayList<String> nextWordIDByCorrect = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(
                         Integer.parseInt(object.toString().split(":")[0])
@@ -108,7 +109,7 @@ public class OtherColumnExtraction {
                 }
                 return nextWordIDByCorrect;
             // 只會有一個或沒有
-            case "nextWordIDAndPos_WordID" :
+            case ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID :
                 ArrayList<String> nextWordIDAndPosWordIDList = new ArrayList<>();
                 String[] nextWordIDAndPosWordID = object.toString().split(":");
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByNextWordIDAndPOS(
@@ -117,7 +118,7 @@ public class OtherColumnExtraction {
                     nextWordIDAndPosWordIDList.add(resultSet.getObject(1).toString());
                 }
                 return nextWordIDAndPosWordIDList;
-            case "original" :
+            case ConstantField.ORIGINAL :
                 List<Map<String ,String>> original = new ArrayList<>();
                 Map<String, String> originalMap = new HashMap<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlBySentenceId(Integer.parseInt(object.toString())));
@@ -128,7 +129,7 @@ public class OtherColumnExtraction {
                     original.add(originalMap);
                 }
                 return original;
-            case "correct" :
+            case ConstantField.CORRECT :
                 List<Map<String ,String>> correct = new ArrayList<>();
                 Map<String, String> correctMap = new HashMap<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlBySentenceID(Integer.parseInt(object.toString())));
@@ -139,15 +140,22 @@ public class OtherColumnExtraction {
                     correct.add(correctMap);
                 }
                 return correct;
-            case "judgeOtherCondition" :
-                List<String> boolen = new ArrayList<>();
+            case ConstantField.JUDGE_OTHER_CONDITION :
+                List<Boolean> booleanList = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getExistByOtherColumnCondition(object));
                 if (resultSet.next()) {
-                    boolen.add("true");
+                    booleanList.add(true);
                 } else {
-                    boolen.add("false");
+                    booleanList.add(false);
                 }
-                return boolen;
+                return booleanList;
+            case DatabaseColumnNameVariableTable.LEMMA :
+                List<String> lemmaList = new ArrayList<>();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getTextOfLemma(object.toString()));
+                while (resultSet.next()) {
+                    lemmaList.add(resultSet.getObject(1).toString().toLowerCase());
+                }
+                return lemmaList;
             default:
                 return new ArrayList<>();
         }

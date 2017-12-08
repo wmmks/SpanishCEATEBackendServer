@@ -60,8 +60,12 @@ public class SqlCommandComposer {
         String sql = "select xml_content from articles_content where id='" + id + "'";
         return sql;
     }
+    public String getOriginalSentenceIDByArticleID(String articleID) {
+        String sql = "select min(b.id) from original_sentences_content as b where b.article_id ='" + articleID + "'";
+        return sql;
+    }
     public String getCorrectSentenceIDByArticleID(String articleID) {
-        String sql = "select min(a.id) from corrected_sentences_content as a where a.article_id ='" + articleID + "' UNION select min(b.id) from original_sentences_content as b where b.article_id ='" + articleID + "'";
+        String sql = "select min(a.id) from corrected_sentences_content as a where a.article_id ='" + articleID + "'";
         return sql;
     }
     public String getExistByOtherColumnCondition(Object object) {
@@ -77,7 +81,10 @@ public class SqlCommandComposer {
                 condition.get(7).split("~")[0] + "' and '" + condition.get(7).split("~")[1] + "'and c.writting_location BETWEEN '" +
                 condition.get(8).split("~")[0] + "' and '" + condition.get(8).split("~")[1] + "'and c.submitted_year BETWEEN '" +
                 condition.get(9).split("~")[0] + "' and '" + condition.get(9).split("~")[1] + "'";
-        System.out.println(sql);
+        return sql;
+    }
+    public String getTextOfLemma(String lemma) {
+        String sql = "SELECT text from `words_table` WHERE lemma = '" + lemma + "'";
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject)

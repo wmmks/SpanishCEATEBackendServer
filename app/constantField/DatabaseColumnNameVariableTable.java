@@ -35,14 +35,14 @@ public class DatabaseColumnNameVariableTable {
     public static String SUBMITTED_YEAR = "submitted_year";
     public static String submittedMonth = "submitted_month";
     public static String haveSubmitted = "have_submitted";
-    public static String WRITTING_LOCATION = "writting_location";
+    public static String WRITING_LOCATION = "writting_location";
     public static String ARTICLE_STYLE = "article_style";
     public static String ARTICLE_TOPIC = "article_topic";
     public static String articleTitle = "article_title";
     public static String NUMBER_Of_WORDS = "number_of_words";
     public static String longMin = "long_min";
     public static String longSeg = "long_seg";
-    public static String[] articlesInformationColumnNameList = {SUBMITTED_YEAR, submittedMonth, haveSubmitted, WRITTING_LOCATION, ARTICLE_STYLE, ARTICLE_TOPIC, articleTitle, NUMBER_Of_WORDS, longMin, longSeg};
+    public static String[] articlesInformationColumnNameList = {SUBMITTED_YEAR, submittedMonth, haveSubmitted, WRITING_LOCATION, ARTICLE_STYLE, ARTICLE_TOPIC, articleTitle, NUMBER_Of_WORDS, longMin, longSeg};
     /**
         * user_information column Name List: the column name of user_information table
          * */
@@ -95,5 +95,5 @@ public class DatabaseColumnNameVariableTable {
     /**
      * words_table.
      */
-    public static String LEMMA = "lemma";
+    public static final String LEMMA = "lemma";
 }

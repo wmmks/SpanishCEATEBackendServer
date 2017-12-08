@@ -17,14 +17,14 @@ import java.util.regex.Pattern;
  */
 public class XMLMatchProcessor {
 
-    private ArrayList<ArrayList<HashMap>> article;
-    private ArrayList<HashMap> paragraph;
-    private HashMap<Integer,String> sentence;
+    public ArrayList<ArrayList<HashMap>> article;
+    private ArrayList<HashMap> sentence;
+    private HashMap<Integer,String> wordMap;
 
     public XMLMatchProcessor() {
         article = new ArrayList<>();
-        paragraph = new ArrayList<>();
-        sentence = new HashMap<>();
+        sentence = new ArrayList<>();
+        wordMap = new HashMap<>();
     }
 
     /**
@@ -32,51 +32,96 @@ public class XMLMatchProcessor {
      * @param xml xml body
      * @throws DocumentException Document Exception
      */
-    public void setXMLMatchParser(String xml) throws DocumentException {
+    public void setXMLMatchParser(String xml, String articleSource) throws DocumentException {
         XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
         SAXReader reader = new SAXReader();
         Iterator ir = reader.read(new StringReader(xml)).getRootElement().nodeIterator();
+        boolean whitespaceFlag = false;
+        String elementText = "";
         while (ir.hasNext()) {
             Node textNode = (Node) ir.next();
-
             if (textNode.getNodeTypeName().equals(XMLArticleConstantTable.xmlTextType)) {
                 String text = textNode.getText();
+                if (isChinese(text)) {
+                    text = "";
+                }
                 text = removeLineFeed(text);
+                //上個詞剛好是(.)(?)(!)結束
+                if (whitespaceFlag) {
+                    //當前一般詞為空白開頭
+                    if((text.contains(" ") && text.indexOf(" ") == 0)) {
+                        //表示上個詞剛好是(.)(?)(!)結束來自correct
+                        if (!wordMap.containsKey(0)) {
+                            article.add(new ArrayList<>(sentence));
+                            sentence.clear();
+                        } else {
+                            //當前一般詞不為一個空白，且上個一般詞存在
+                            if (!text.equals(" ")) {
+                                setWordMap(" ","","");
+                                sentence.add(new HashMap<>(wordMap));
+                                article.add(new ArrayList<>(sentence));
+                                wordMap.clear();
+                                sentence.clear();
+                                StringBuilder sb = new StringBuilder(text);
+                                //wordMap.put(0,sb.deleteCharAt(0).toString());
+                                text = sb.deleteCharAt(0).toString();
+                            } else if (text.equals(" ")) {
+                                setWordMap(" ","","");
+                                sentence.add(new HashMap<>(wordMap));
+                                article.add(new ArrayList<>(sentence));
+                                wordMap.clear();
+                                sentence.clear();
+                                //wordMap.put(0,"");
+                                text = "";
+                            }
+                        }
+                    }
+                    whitespaceFlag = false;
+                }
                 if (text.contains(". ") || text.contains("? ") || text.contains("! ")) {
-                    if (!text.equals(". ")){
-                        String[] words = xmlMatchProcessor.getText(text);
+                    if (!text.equals(". ") && !text.equals("? ") && !text.equals("! ")) {
+                        String[] words = xmlMatchProcessor.getPauseMarkText(text);
                         for (String w : words) {
                             if(w.contains(XMLArticleConstantTable.sentenceTag)) {
                                 w = w.replace(XMLArticleConstantTable.sentenceTag,"");
-                                sentence.put(0,w);
-                                sentence.put(1,"");
-                                sentence.put(2,"");
-                                paragraph.add(new HashMap<>(sentence));
-                                article.add(new ArrayList<>(paragraph));
+                                if (wordMap.containsKey(0)) {
+                                    w = wordMap.get(0) + w;
+                                }
+                                setWordMap(w,"","");
+                                sentence.add(new HashMap<>(wordMap));
+                                article.add(new ArrayList<>(sentence));
+                                wordMap.clear();
                                 sentence.clear();
-                                paragraph.clear();
-                                sentence.put(0,"");
+                                wordMap.put(0,"");
                             } else {
-                                sentence.put(0,w);
+                                wordMap.put(0,w);
                             }
                         }
                     } else {
-                        sentence.put(0,text);
-                        sentence.put(1,"");
-                        sentence.put(2,"");
-                        paragraph.add(new HashMap<>(sentence));
-                        article.add(new ArrayList<>(paragraph));
+                        setWordMap(text,"","");
+                        sentence.add(new HashMap<>(wordMap));
+                        article.add(new ArrayList<>(sentence));
+                        wordMap.clear();
                         sentence.clear();
-                        paragraph.clear();
-                        sentence.put(0,"");
+                        wordMap.put(0,"");
                     }
+                } else if((text.contains(".") && text.indexOf(".") == (text.length() - 1)) ||
+                        (text.contains("?") && text.indexOf("?") == (text.length() - 1)) ||
+                        (text.contains("!") && text.indexOf("!") == (text.length() - 1))) {
+                    whitespaceFlag = true;
+                    setWordMap(text,"","");
+                    sentence.add(new HashMap<>(wordMap));
+                    wordMap.clear();
                 } else {
-                    sentence.put(0,text);
+                    if (wordMap.containsKey(0)) {
+                        wordMap.put(0, wordMap.get(0) + text);
+                    } else {
+                        wordMap.put(0,text);
+                    }
                 }
             } else if (textNode.getNodeTypeName().equals(XMLArticleConstantTable.xmlElementType)) {
                 Element textElement = (Element) textNode;
-                String correctText = textElement.attributeValue(
-                        XMLArticleConstantTable.xmlCorrectedTextTag);
+                String correctText = textElement.attributeValue(XMLArticleConstantTable.xmlCorrectedTextTag);
                 String originalText = textElement.getText();
                 if (correctText != null) {
                     if (correctText.equals(XMLArticleConstantTable.xmlIgnoredTag)) {
@@ -85,52 +130,113 @@ public class XMLMatchProcessor {
                 } else {
                     correctText = textElement.getText();
                 }
-                //要換下一段落了
-                if (correctText.contains(". ") || correctText.contains("? ") || correctText.contains("! ")) {
-                    if (!sentence.isEmpty()) {
-                        //先輸出上句完準備將此correct句當新段落的開始
-                        sentence.put(1,"");
-                        sentence.put(2,"");
-                        paragraph.add(new HashMap<>(sentence));
-                        article.add(new ArrayList<>(paragraph));
-                        paragraph.clear();
+                if (articleSource.equals("correct")) {
+                    elementText = correctText;
+                } else if (articleSource.equals("original")) {
+                    elementText = originalText;
+                }
+                //上一個詞若以(.)(?)(!)結束
+                if (whitespaceFlag && !elementText.equals("")) {
+                    if (elementText.contains(" ") && elementText.indexOf(" ") == 0) {
+                        article.add(new ArrayList<>(sentence));
                         sentence.clear();
-                        sentence.put(0,"");
-                        sentence.put(1,correctText);
-                        sentence.put(2,originalText);
-                        paragraph.add(new HashMap<>(sentence));
-                        sentence.clear();
+                        setWordMap("",correctText,originalText);
+                        sentence.add(new HashMap<>(wordMap));
+                        wordMap.clear();
+                    }
+                    whitespaceFlag = false;
+                }
 
+                //要換下一段落了
+                if (elementText.contains(".") || elementText.contains("?") || elementText.contains("!")) {
+                    if (wordMap.containsKey(0)) {
+                        //先輸出上句完準備將此correct句當新段落的開始
+                        // if correct "." 在最後，直接輸出成一段
+                        if (elementText.indexOf(".") == elementText.length() - 1 ||
+                                elementText.indexOf("?") == elementText.length() - 1 ||
+                                elementText.indexOf("!") == elementText.length() - 1) {
+                            wordMap.put(1,correctText);
+                            wordMap.put(2,originalText);
+                            sentence.add(new HashMap<>(wordMap));
+                            wordMap.clear();
+                            whitespaceFlag = true;
+                        } else {
+                            if (elementText.contains(". ") || elementText.contains("? ") || elementText.contains("! ")) {
+                                wordMap.put(1,"");
+                                wordMap.put(2,"");
+                                sentence.add(new HashMap<>(wordMap));
+                                article.add(new ArrayList<>(sentence));
+                                sentence.clear();
+                                wordMap.clear();
+                                setWordMap("",correctText,originalText);
+                                sentence.add(new HashMap<>(wordMap));
+                                wordMap.clear();
+                            } else {
+                                wordMap.put(1,correctText);
+                                wordMap.put(2,originalText);
+                                sentence.add(new HashMap<>(wordMap));
+                                wordMap.clear();
+                            }
+                        }
                     } else {
-                        sentence.put(0,"");
-                        sentence.put(1,correctText);
-                        sentence.put(2,originalText);
-                        paragraph.add(new HashMap<>(sentence));
-                        article.add(new ArrayList<>(paragraph));
-                        paragraph.clear();
-                        sentence.clear();
+                        if (elementText.indexOf(".") == elementText.length() - 1 ||
+                                elementText.indexOf("?") == elementText.length() - 1 ||
+                                elementText.indexOf("!") == elementText.length() - 1) {
+                            setWordMap("",correctText,originalText);
+                            sentence.add(new HashMap<>(wordMap));
+                            wordMap.clear();
+                            whitespaceFlag = true;
+                        } else {
+                            if (elementText.contains(". ") || elementText.contains("? ") || elementText.contains("! ")) {
+                                setWordMap("","","");
+                                sentence.add(new HashMap<>(wordMap));
+                                article.add(new ArrayList<>(sentence));
+                                sentence.clear();
+                                wordMap.clear();
+                                setWordMap("",correctText,originalText);
+                                sentence.add(new HashMap<>(wordMap));
+                                wordMap.clear();
+                            } else {
+                                setWordMap("",correctText,originalText);
+                                sentence.add(new HashMap<>(wordMap));
+                                wordMap.clear();
+                            }
+                        }
                     }
                 } else {
-                    if (sentence.isEmpty()){
-                        sentence.put(0,"");
+                    if (!wordMap.containsKey(0)){
+                        wordMap.put(0,"");
                     }
-                    sentence.put(1,correctText);
-                    sentence.put(2,originalText);
-                    paragraph.add(new HashMap<>(sentence));
-                    sentence.clear();
+                    wordMap.put(1,correctText);
+                    wordMap.put(2,originalText);
+                    sentence.add(new HashMap<>(wordMap));
+                    wordMap.clear();
                 }
             }
         }
-        if(sentence.size() == 1) {
-            sentence.put(1,"");
-            sentence.put(2,"");
+        if(wordMap.containsKey(0)) {
+            wordMap.put(1,"");
+            wordMap.put(2,"");
         } else {
-            sentence.put(0,"");
+            wordMap.put(0,"");
         }
-        paragraph.add(new HashMap<>(sentence));
-        article.add(new ArrayList<>(paragraph));
-        paragraph.clear();
+        sentence.add(new HashMap<>(wordMap));
+        article.add(new ArrayList<>(sentence));
         sentence.clear();
+        wordMap.clear();
+    }
+
+    /**
+     * 只能判断部分CJK字符（CJK统一汉字）.
+     * @param str 判斷中文字的字串
+     * @return true or false
+     */
+    private static boolean isChinese(String str) {
+        if (str == null) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile("[\\u4E00-\\u9FBF]+");
+        return pattern.matcher(str.trim()).find();
     }
 
     /**
@@ -146,7 +252,13 @@ public class XMLMatchProcessor {
         return text;
     }
 
-    String[] getText(String text) {
+    private void setWordMap(String text, String correctText, String originalText) {
+        wordMap.put(0,text);
+        wordMap.put(1,correctText);
+        wordMap.put(2,originalText);
+    }
+
+    private String[] getPauseMarkText(String text) {
         String re="(\\. )|(\\? )|(! )";
         Pattern p =Pattern.compile(re);
         Matcher m = p.matcher(text);
