@@ -33,11 +33,10 @@ public class XMLMatchProcessor {
      * @throws DocumentException Document Exception
      */
     public void setXMLMatchParser(String xml, String articleSource) throws DocumentException {
-        XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
         SAXReader reader = new SAXReader();
         Iterator ir = reader.read(new StringReader(xml)).getRootElement().nodeIterator();
         boolean whitespaceFlag = false;
-        String elementText = "";
+        String elementText;
         while (ir.hasNext()) {
             Node textNode = (Node) ir.next();
             if (textNode.getNodeTypeName().equals(XMLArticleConstantTable.xmlTextType)) {
@@ -59,19 +58,13 @@ public class XMLMatchProcessor {
                             if (!text.equals(" ")) {
                                 setWordMap(" ","","");
                                 sentence.add(new HashMap<>(wordMap));
-                                article.add(new ArrayList<>(sentence));
-                                wordMap.clear();
-                                sentence.clear();
+                                saveSentence();
                                 StringBuilder sb = new StringBuilder(text);
-                                //wordMap.put(0,sb.deleteCharAt(0).toString());
                                 text = sb.deleteCharAt(0).toString();
                             } else if (text.equals(" ")) {
                                 setWordMap(" ","","");
                                 sentence.add(new HashMap<>(wordMap));
-                                article.add(new ArrayList<>(sentence));
-                                wordMap.clear();
-                                sentence.clear();
-                                //wordMap.put(0,"");
+                                saveSentence();
                                 text = "";
                             }
                         }
@@ -80,7 +73,7 @@ public class XMLMatchProcessor {
                 }
                 if (text.contains(". ") || text.contains("? ") || text.contains("! ")) {
                     if (!text.equals(". ") && !text.equals("? ") && !text.equals("! ")) {
-                        String[] words = xmlMatchProcessor.getPauseMarkText(text);
+                        String[] words = getPauseMarkText(text);
                         for (String w : words) {
                             if(w.contains(XMLArticleConstantTable.sentenceTag)) {
                                 w = w.replace(XMLArticleConstantTable.sentenceTag,"");
@@ -89,25 +82,26 @@ public class XMLMatchProcessor {
                                 }
                                 setWordMap(w,"","");
                                 sentence.add(new HashMap<>(wordMap));
-                                article.add(new ArrayList<>(sentence));
-                                wordMap.clear();
-                                sentence.clear();
+                                saveSentence();
                                 wordMap.put(0,"");
                             } else {
-                                wordMap.put(0,w);
+                                if(IsPauseMarkEnd(w)) {
+                                    whitespaceFlag = true;
+                                    setWordMap(w,"","");
+                                    sentence.add(new HashMap<>(wordMap));
+                                    wordMap.clear();
+                                } else {
+                                    wordMap.put(0,w);
+                                }
                             }
                         }
                     } else {
                         setWordMap(text,"","");
                         sentence.add(new HashMap<>(wordMap));
-                        article.add(new ArrayList<>(sentence));
-                        wordMap.clear();
-                        sentence.clear();
+                        saveSentence();
                         wordMap.put(0,"");
                     }
-                } else if((text.contains(".") && text.indexOf(".") == (text.length() - 1)) ||
-                        (text.contains("?") && text.indexOf("?") == (text.length() - 1)) ||
-                        (text.contains("!") && text.indexOf("!") == (text.length() - 1))) {
+                } else if(IsPauseMarkEnd(text)) {
                     whitespaceFlag = true;
                     setWordMap(text,"","");
                     sentence.add(new HashMap<>(wordMap));
@@ -130,31 +124,27 @@ public class XMLMatchProcessor {
                 } else {
                     correctText = textElement.getText();
                 }
-                if (articleSource.equals("correct")) {
-                    elementText = correctText;
-                } else if (articleSource.equals("original")) {
+                if (articleSource.equals("original")) {
                     elementText = originalText;
+                } else {
+                    elementText = correctText;
                 }
                 //上一個詞若以(.)(?)(!)結束
                 if (whitespaceFlag && !elementText.equals("")) {
                     if (elementText.contains(" ") && elementText.indexOf(" ") == 0) {
-                        article.add(new ArrayList<>(sentence));
-                        sentence.clear();
-                        setWordMap("",correctText,originalText);
+                        saveSentence();
+                        setWordMap("", correctText, originalText);
                         sentence.add(new HashMap<>(wordMap));
                         wordMap.clear();
                     }
                     whitespaceFlag = false;
                 }
-
                 //要換下一段落了
                 if (elementText.contains(".") || elementText.contains("?") || elementText.contains("!")) {
                     if (wordMap.containsKey(0)) {
                         //先輸出上句完準備將此correct句當新段落的開始
                         // if correct "." 在最後，直接輸出成一段
-                        if (elementText.indexOf(".") == elementText.length() - 1 ||
-                                elementText.indexOf("?") == elementText.length() - 1 ||
-                                elementText.indexOf("!") == elementText.length() - 1) {
+                        if (IsPauseMarkEnd(elementText)) {
                             wordMap.put(1,correctText);
                             wordMap.put(2,originalText);
                             sentence.add(new HashMap<>(wordMap));
@@ -165,10 +155,8 @@ public class XMLMatchProcessor {
                                 wordMap.put(1,"");
                                 wordMap.put(2,"");
                                 sentence.add(new HashMap<>(wordMap));
-                                article.add(new ArrayList<>(sentence));
-                                sentence.clear();
-                                wordMap.clear();
-                                setWordMap("",correctText,originalText);
+                                saveSentence();
+                                setWordMap("", correctText, originalText);
                                 sentence.add(new HashMap<>(wordMap));
                                 wordMap.clear();
                             } else {
@@ -179,10 +167,8 @@ public class XMLMatchProcessor {
                             }
                         }
                     } else {
-                        if (elementText.indexOf(".") == elementText.length() - 1 ||
-                                elementText.indexOf("?") == elementText.length() - 1 ||
-                                elementText.indexOf("!") == elementText.length() - 1) {
-                            setWordMap("",correctText,originalText);
+                        if (IsPauseMarkEnd(elementText)) {
+                            setWordMap("", correctText, originalText);
                             sentence.add(new HashMap<>(wordMap));
                             wordMap.clear();
                             whitespaceFlag = true;
@@ -190,14 +176,12 @@ public class XMLMatchProcessor {
                             if (elementText.contains(". ") || elementText.contains("? ") || elementText.contains("! ")) {
                                 setWordMap("","","");
                                 sentence.add(new HashMap<>(wordMap));
-                                article.add(new ArrayList<>(sentence));
-                                sentence.clear();
-                                wordMap.clear();
-                                setWordMap("",correctText,originalText);
+                                saveSentence();
+                                setWordMap("", correctText, originalText);
                                 sentence.add(new HashMap<>(wordMap));
                                 wordMap.clear();
                             } else {
-                                setWordMap("",correctText,originalText);
+                                setWordMap("", correctText, originalText);
                                 sentence.add(new HashMap<>(wordMap));
                                 wordMap.clear();
                             }
@@ -221,9 +205,7 @@ public class XMLMatchProcessor {
             wordMap.put(0,"");
         }
         sentence.add(new HashMap<>(wordMap));
-        article.add(new ArrayList<>(sentence));
-        sentence.clear();
-        wordMap.clear();
+        saveSentence();
     }
 
     /**
@@ -237,6 +219,26 @@ public class XMLMatchProcessor {
         }
         Pattern pattern = Pattern.compile("[\\u4E00-\\u9FBF]+");
         return pattern.matcher(str.trim()).find();
+    }
+
+    /**
+     * 判斷句尾是否為可能斷句符號.
+     * @param text 判斷的字串
+     * @return true or false
+     */
+    private boolean IsPauseMarkEnd(String text) {
+        return (text.contains(".") && text.indexOf(".") == (text.length() - 1)) ||
+                (text.contains("?") && text.indexOf("?") == (text.length() - 1)) ||
+                (text.contains("!") && text.indexOf("!") == (text.length() - 1));
+    }
+
+    /**
+     * Save a sentence in article general condition.
+     */
+    private void saveSentence() {
+        article.add(new ArrayList<>(sentence));
+        sentence.clear();
+        wordMap.clear();
     }
 
     /**
@@ -280,7 +282,7 @@ public class XMLMatchProcessor {
         return words;
     }
 
-    public String getMatchingFormat (String sentenceID, String query) {
+    String getMatchingFormat (String sentenceID, String query) {
         HtmlTagProducer tagProducer = new HtmlTagProducer();
         StringBuilder htmlCorrect = new StringBuilder();
         StringBuilder htmlOriginal = new StringBuilder();

@@ -40,19 +40,17 @@ public class SearchProcessing {
         palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS);
         originalListList = palabra.getOriginalList();
         correctListList = palabra.getCorrectList();
-        int count = 0;
         if (originalOrCorrect.equals("1")) {
             String original_sentence = "", original_sentence_id = "", original_article_id = "";
             for (List<Map<String, String>> originalList : originalListList) {
                 for (Map<String, String> original : originalList) {
-                    count++;
                     for (String m : original.keySet()) {
                         switch (m) {
                             case ConstantField.ORIGINAL_ARTICLE_ID :
                                 original_article_id = original.get(m);
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE :
-                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.UNICODE_CASE).
                                         matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE_ID :
@@ -65,10 +63,13 @@ public class SearchProcessing {
                     if(!palabra.judgeExists(original_article_id, userDataJsonObject)) {
                         break;
                     } else {
-                        resultJsonObject.put(count + ""
-                                ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
-                                        + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
-                                        + ConstantField.ORIGINAL + "\">" + original_sentence + "</a>");
+                        // Avoid DB Select Similar Term Problem!
+                        if (original_sentence.contains("span")) {
+                            resultJsonObject.put(original_sentence_id + ""
+                                    ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
+                                            + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
+                                            + ConstantField.ORIGINAL + "\">" + original_sentence + "</a>");
+                        }
                     }
                 }
             }
@@ -76,14 +77,13 @@ public class SearchProcessing {
             String correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
             for (List<Map<String, String>> correctList : correctListList) {
                 for (Map<String, String> correct : correctList) {
-                    count++;
                     for (String m : correct.keySet()) {
                         switch (m) {
                             case ConstantField.CORRECT_ARTICLE_ID :
                                 correct_article_id = correct.get(m);
                                 break;
                             case ConstantField.CORRECT_SENTENCE :
-                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.UNICODE_CASE).
                                         matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.CORRECT_SENTENCE_ID :
@@ -96,10 +96,13 @@ public class SearchProcessing {
                     if(!palabra.judgeExists(correct_article_id, userDataJsonObject)) {
                         break;
                     } else {
-                        resultJsonObject.put(count + ""
-                                ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
-                                        + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
-                                        + ConstantField.CORRECT + "\">" + correct_sentence + "</a>");
+                        // Avoid DB Select Similar Term Problem!
+                        if (correct_sentence.contains("span")) {
+                            resultJsonObject.put(correct_sentence_id + ""
+                                    ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
+                                            + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
+                                            + ConstantField.CORRECT + "\">" + correct_sentence + "</a>");
+                        }
                     }
                 }
             }
