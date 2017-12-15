@@ -74,14 +74,14 @@ public class SqlCommandComposer {
                 "where a.id = '" + condition.get(0) + "' and a.id = b.id and b.id = c.id and a.learning_hours BETWEEN '" +
                 condition.get(1).split("~")[0] + "' and '" + condition.get(1).split("~")[1] + "' and a.gender LIKE '%" +
                 condition.get(2) + "%' and a.department LIKE '%" +
-                condition.get(3) + "%' and b.special_experience = '" +
+                condition.get(3) + "%' and b.special_experience BETWEEN '" +
                 condition.get(4).split("~")[0] + "' and '" + condition.get(4).split("~")[1] + "'and c.number_of_words BETWEEN '" +
                 condition.get(5).split("~")[0] + "' and '" + condition.get(5).split("~")[1] + "'and c.article_style BETWEEN '" +
                 condition.get(6).split("~")[0] + "' and '" + condition.get(6).split("~")[1] + "'and c.article_topic BETWEEN '" +
                 condition.get(7).split("~")[0] + "' and '" + condition.get(7).split("~")[1] + "'and c.writting_location BETWEEN '" +
                 condition.get(8).split("~")[0] + "' and '" + condition.get(8).split("~")[1] + "'and c.submitted_year BETWEEN '" +
                 condition.get(9).split("~")[0] + "' and '" + condition.get(9).split("~")[1] + "'";
-        return sql;
+                return sql;
     }
     public String getTextOfLemma(String lemma) {
         String sql = "SELECT text from `words_table` WHERE lemma = '" + lemma + "'";
