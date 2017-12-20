@@ -50,7 +50,7 @@ public class SearchProcessing {
                                 original_article_id = original.get(m);
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE :
-                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.UNICODE_CASE).
+                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE_ID :
@@ -83,7 +83,7 @@ public class SearchProcessing {
                                 correct_article_id = correct.get(m);
                                 break;
                             case ConstantField.CORRECT_SENTENCE :
-                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.UNICODE_CASE).
+                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.CORRECT_SENTENCE_ID :

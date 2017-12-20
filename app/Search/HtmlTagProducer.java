@@ -45,9 +45,8 @@ public class HtmlTagProducer {
             color = "color: rgb(228, 102, 80);";
 
         }
-        if (word.equals("")) {
-            word = " ";
-        } else if (word.contains(query)) {
+
+        if (word.contains(query)) {
             String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
             word = word.replaceAll(query, queryTag);
         }

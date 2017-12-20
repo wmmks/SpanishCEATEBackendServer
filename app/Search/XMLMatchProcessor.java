@@ -15,13 +15,13 @@ import java.util.regex.Pattern;
 /**
  * Created by Dan on 2017/11/11.
  */
-public class XMLMatchProcessor {
+class XMLMatchProcessor {
 
-    public ArrayList<ArrayList<HashMap>> article;
+    private ArrayList<ArrayList<HashMap>> article;
     private ArrayList<HashMap> sentence;
     private HashMap<Integer,String> wordMap;
 
-    public XMLMatchProcessor() {
+    XMLMatchProcessor() {
         article = new ArrayList<>();
         sentence = new ArrayList<>();
         wordMap = new HashMap<>();
@@ -32,7 +32,7 @@ public class XMLMatchProcessor {
      * @param xml xml body
      * @throws DocumentException Document Exception
      */
-    public void setXMLMatchParser(String xml, String articleSource) throws DocumentException {
+    void setXMLMatchParser(String xml, String articleSource) throws DocumentException {
         SAXReader reader = new SAXReader();
         Iterator ir = reader.read(new StringReader(xml)).getRootElement().nodeIterator();
         boolean whitespaceFlag = false;
@@ -136,6 +136,8 @@ public class XMLMatchProcessor {
                         setWordMap("", correctText, originalText);
                         sentence.add(new HashMap<>(wordMap));
                         wordMap.clear();
+                        correctText = "";
+                        originalText = "";
                     }
                     whitespaceFlag = false;
                 }
@@ -281,7 +283,9 @@ public class XMLMatchProcessor {
         }
         return words;
     }
-
+    /**
+     * Output the matching format of the correct article and original article.
+     */
     String getMatchingFormat (String sentenceID, String query) {
         HtmlTagProducer tagProducer = new HtmlTagProducer();
         StringBuilder htmlCorrect = new StringBuilder();
