@@ -44,13 +44,13 @@ public class OtherColumnExtraction {
                     wordIDList.add(resultSet.getObject(1).toString());
                 }
                 return wordIDList;
-            // 只會出現一個或沒有
+            // 會出現 0~多
             case ConstantField.TEXT_AND_POS_WORD_ID :
                 List<String> textAndPosWordIDList = new ArrayList<>();
                 String[] textAndPosWordID = object.toString().split(":");
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByTextAndPOS
                         (textAndPosWordID[0], textAndPosWordID[1]));
-                if (resultSet.next()) {
+                while (resultSet.next()) {
                     textAndPosWordIDList.add(resultSet.getObject(1).toString());
                 }
                 return textAndPosWordIDList;

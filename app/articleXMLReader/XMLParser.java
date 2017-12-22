@@ -8,6 +8,7 @@ import org.dom4j.Node;
 
 
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 /**
  * XML Parser.
@@ -36,6 +37,8 @@ public class XMLParser {
      * @throws DocumentException Document Exception
      */
     public void setXMLParser(String xml) throws DocumentException {
+        Pattern p = Pattern.compile("[^\\u0009\\u000A\\u000D\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]+");
+        xml = p.matcher(xml).replaceAll("");
         Iterator ir = DocumentHelper.parseText(xml).getRootElement().nodeIterator();
         while (ir.hasNext()) {
             Node textNode = (Node) ir.next();
