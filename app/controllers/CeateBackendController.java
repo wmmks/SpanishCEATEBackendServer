@@ -1,6 +1,6 @@
 package controllers;
 
-import Search.SearchProcessing;
+import Search.SearchPreProcessing;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
@@ -72,17 +72,17 @@ public class CeateBackendController extends Controller {
         JsonNode result;
         JSONObject userDataJsonObject = new JSONObject(request.toString());
         UserData userData = sqlCommandComposer.getUserData(userDataJsonObject);
-        int id = userDataJsonObject.getInt(DatabaseColumnNameVariableTable.id);
-        String updateCondition = "where " + DatabaseColumnNameVariableTable.id + "=" + id;
+        int id = userDataJsonObject.getInt(DatabaseColumnNameVariableTable.ID);
+        String updateCondition = "where " + DatabaseColumnNameVariableTable.ID + "=" + id;
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersInformationTableName, userData.getUserInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesInformationTableName, userData.getArticleInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName, userData.getClassInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersSpecialExperienceTableName, userData.getUserSpecialExperienceSqlObject(), updateCondition);
         if (!XMLArticleConstantTable.xmlErrorFlag) {
             databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesContentTableName, userData.getArticleContentSqlObject(), updateCondition);
-            result = Json.parse(new JSONObject().put("message", "User id=" + id + " data update finish").toString());
+            result = Json.parse(new JSONObject().put("message", "User ID=" + id + " data update finish").toString());
         } else {
-            result = Json.parse(new JSONObject().put("error_message", "User id=" + id + " xml format is incorrect, please fix it and re-click update.").toString());
+            result = Json.parse(new JSONObject().put("error_message", "User ID=" + id + " xml format is incorrect, please fix it and re-click update.").toString());
         }
         XMLArticleConstantTable.xmlErrorFlag = false;
         return ok(result);
@@ -94,9 +94,9 @@ public class CeateBackendController extends Controller {
     public Result getSearchData() {
         JsonNode request = request().body().asJson();
         JsonNode result = Json.newObject();
-        SearchProcessing searchPostProcessing = new SearchProcessing();
+        SearchPreProcessing searchPreProcessing = new SearchPreProcessing();
         try {
-            result = searchPostProcessing.setSearchProcessingOfPalabra(new JSONObject(request.toString()));
+            result = searchPreProcessing.setSearchProcessingOfPalabra(new JSONObject(request.toString()));
         } catch (SQLException e) {
             e.getErrorCode();
         }
@@ -109,7 +109,7 @@ public class CeateBackendController extends Controller {
     public Result getSearchLemmaData() {
         JsonNode request = request().body().asJson();
         JsonNode result = Json.newObject();
-        SearchProcessing searchPostProcessing = new SearchProcessing();
+        SearchPreProcessing searchPostProcessing = new SearchPreProcessing();
         try {
             result = searchPostProcessing.setSearchProcessingOfLemma(new JSONObject(request.toString()));
         } catch (SQLException e) {
@@ -119,14 +119,14 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Extract Original Article and Correct Article Function.
+     * Search Page Extract Original Article and Correct Article And Author Information Function.
      */
-    public Result getSearchXMLResult() {
+    public Result getSearchXMLAndAuthorInfoResult() {
         JsonNode request = request().body().asJson();
         JsonNode result = Json.newObject();
-        SearchProcessing searchPostProcessing = new SearchProcessing();
+        SearchPreProcessing searchPostProcessing = new SearchPreProcessing();
         try {
-            result = searchPostProcessing.setSearchProcessingOfXML(new JSONObject(request.toString()));
+            result = searchPostProcessing.setSearchProcessingOfXMLAndAuthorInfo(new JSONObject(request.toString()));
         } catch (SQLException e) {
             e.getErrorCode();
         }

@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  * @author Alex
  *
  */
-public class SearchProcessing {
+public class SearchPreProcessing {
     /**
      * Search Post Processing About Web Expression.
      * @param userDataJsonObject user data Json Object
@@ -41,7 +41,7 @@ public class SearchProcessing {
         originalListList = palabra.getOriginalList();
         correctListList = palabra.getCorrectList();
         if (originalOrCorrect.equals("1")) {
-            String original_sentence = "", original_sentence_id = "", original_article_id = "";
+            String original_htmlSentence = "", original_sentence = "", original_sentence_id = "", original_article_id = "";
             for (List<Map<String, String>> originalList : originalListList) {
                 for (Map<String, String> original : originalList) {
                     for (String m : original.keySet()) {
@@ -50,7 +50,8 @@ public class SearchProcessing {
                                 original_article_id = original.get(m);
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE :
-                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                original_sentence = original.get(m);
+                                original_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE_ID :
@@ -64,17 +65,18 @@ public class SearchProcessing {
                         break;
                     } else {
                         // Avoid DB Select Similar Term Problem!
-                        if (original_sentence.contains("span")) {
+                        if (original_htmlSentence.contains("span")) {
                             resultJsonObject.put(original_sentence_id + ""
                                     ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
                                             + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.ORIGINAL + "\">" + original_sentence + "</a>");
+                                            + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\">"
+                                            + original_htmlSentence + "</a>");
                         }
                     }
                 }
             }
         } else if(originalOrCorrect.equals("2")) {
-            String correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
+            String correct_htmlSentence = "", correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
             for (List<Map<String, String>> correctList : correctListList) {
                 for (Map<String, String> correct : correctList) {
                     for (String m : correct.keySet()) {
@@ -83,7 +85,8 @@ public class SearchProcessing {
                                 correct_article_id = correct.get(m);
                                 break;
                             case ConstantField.CORRECT_SENTENCE :
-                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                correct_sentence = correct.get(m);
+                                correct_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.CORRECT_SENTENCE_ID :
@@ -97,11 +100,12 @@ public class SearchProcessing {
                         break;
                     } else {
                         // Avoid DB Select Similar Term Problem!
-                        if (correct_sentence.contains("span")) {
+                        if (correct_htmlSentence.contains("span")) {
                             resultJsonObject.put(correct_sentence_id + ""
                                     ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
                                             + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.CORRECT + "\">" + correct_sentence + "</a>");
+                                            + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\">"
+                                            + correct_htmlSentence + "</a>");
                         }
                     }
                 }
@@ -138,7 +142,7 @@ public class SearchProcessing {
      * @return result original and correct article
      * @throws SQLException SQL Exception
      */
-    public JsonNode setSearchProcessingOfXML(JSONObject userDataJsonObject) throws SQLException {
+    public JsonNode setSearchProcessingOfXMLAndAuthorInfo(JSONObject userDataJsonObject) throws SQLException {
         DatabaseController databaseController = new DatabaseController();
         String articleID = userDataJsonObject.getString(ConstantField.ARTICLE_ID);
         String sentenceID = userDataJsonObject.getString(ConstantField.SENTENCE_ID);
@@ -148,6 +152,7 @@ public class SearchProcessing {
         SqlCommandComposer sqlCommandComposer = new SqlCommandComposer();
         ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID));
         ResultSet minResultSet = null;
+        ResultSet articleAuthorInfoResult = databaseController.execSelect(sqlCommandComposer.getAuthorInformation(articleID));
         int minID = 0;
         String xml = "";
         if (source.equals(ConstantField.ORIGINAL)) {
@@ -175,6 +180,19 @@ public class SearchProcessing {
         JSONObject resultJsonObject = new JSONObject();
         resultJsonObject.put(ConstantField.ORIGINAL_ARTICLE, xmlMatchProcessor.getMatchingFormat((Integer.parseInt(sentenceID) - minID + 1) + "", query).split("@")[1]);
         resultJsonObject.put(ConstantField.CORRECT_ARTICLE, xmlMatchProcessor.getMatchingFormat((Integer.parseInt(sentenceID) - minID + 1) + "", query).split("@")[0]);
+        if (articleAuthorInfoResult.next()) {
+            resultJsonObject.put(DatabaseColumnNameVariableTable.ID, articleAuthorInfoResult.getString(1));
+            resultJsonObject.put(DatabaseColumnNameVariableTable.GENDER, articleAuthorInfoResult.getString(2));
+            resultJsonObject.put(DatabaseColumnNameVariableTable.SCHOOL_NAME, articleAuthorInfoResult.getString(3));
+            resultJsonObject.put(DatabaseColumnNameVariableTable.DEPARTMENT, articleAuthorInfoResult.getString(4));
+            resultJsonObject.put(DatabaseColumnNameVariableTable.SUBMITTED_YEAR, articleAuthorInfoResult.getString(5));
+            resultJsonObject.put(DatabaseColumnNameVariableTable.LEARNING_HOURS, articleAuthorInfoResult.getString(6));
+            if (articleAuthorInfoResult.getString(7).equals("1")) {
+                resultJsonObject.put(DatabaseColumnNameVariableTable.SPECIAL_EXPERIENCE, "無");
+            } else {
+                resultJsonObject.put(DatabaseColumnNameVariableTable.SPECIAL_EXPERIENCE, "有");
+            }
+        }
         return Json.parse(resultJsonObject.toString());
     }
 }

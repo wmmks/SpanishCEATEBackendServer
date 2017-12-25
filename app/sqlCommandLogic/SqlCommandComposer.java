@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class SqlCommandComposer {
     public String getUserDataSqlByIdAndSystemType(int id, int systemType) {
-        String sql = "select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.id=b.id and b.id=c.id and c.id=d.id and d.id=e.id and a.id=" + id + " and a.system_type=" + systemType;
+        String sql = "select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.ID=b.ID and b.ID=c.ID and c.ID=d.ID and d.ID=e.ID and a.ID=" + id + " and a.system_type=" + systemType;
         return sql;
     }
     public String getOtherColumnSqlByText(String text) {
@@ -44,34 +44,39 @@ public class SqlCommandComposer {
         return sql;
     }
     public String getOtherColumnSqlByNextWordIDAndPOS(int nextWordID, String pos) {
-        String sql = "select * from words_table as a where a.id='"
+        String sql = "select * from words_table as a where a.ID='"
                 + nextWordID + "'" + "and a.pos='" + pos + "'";
         return sql;
     }
     public String getOriginalSqlBySentenceId(int id) {
-        String sql = "select * from original_sentences_content as a where a.id='" + id + "'";
+        String sql = "select * from original_sentences_content as a where a.ID='" + id + "'";
         return sql;
     }
     public String getCorrectSqlBySentenceID(int id) {
-        String sql = "select * from corrected_sentences_content as a where a.id='" + id + "'";
+        String sql = "select * from corrected_sentences_content as a where a.ID='" + id + "'";
         return sql;
     }
     public String getXMLByArticleID(String id) {
-        String sql = "select xml_content from articles_content where id='" + id + "'";
+        String sql = "select xml_content from articles_content where ID='" + id + "'";
         return sql;
     }
     public String getOriginalSentenceIDByArticleID(String articleID) {
-        String sql = "select min(b.id) from original_sentences_content as b where b.article_id ='" + articleID + "'";
+        String sql = "select min(b.ID) from original_sentences_content as b where b.article_id ='" + articleID + "'";
         return sql;
     }
     public String getCorrectSentenceIDByArticleID(String articleID) {
-        String sql = "select min(a.id) from corrected_sentences_content as a where a.article_id ='" + articleID + "'";
+        String sql = "select min(a.ID) from corrected_sentences_content as a where a.article_id ='" + articleID + "'";
+        return sql;
+    }
+    public String getAuthorInformation(String articleID) {
+        String sql = "select a.ID,a.gender,a.school_name,a.department,b.submitted_year,a.learning_hours, c.special_experience from users_information as a, articles_information as b,users_special_experience as c " +
+                "where a.ID ='" + articleID + "' and a.ID = b.ID and b.ID = c.ID";
         return sql;
     }
     public String getExistByOtherColumnCondition(Object object) {
         List<String> condition = (List<String>) object;
         String sql = "select * from users_information as a, users_special_experience as b, articles_information as c " +
-                "where a.id = '" + condition.get(0) + "' and a.id = b.id and b.id = c.id and a.learning_hours BETWEEN '" +
+                "where a.ID = '" + condition.get(0) + "' and a.ID = b.ID and b.ID = c.ID and a.learning_hours BETWEEN '" +
                 condition.get(1).split("~")[0] + "' and '" + condition.get(1).split("~")[1] + "' and a.gender LIKE '%" +
                 condition.get(2) + "%' and a.department LIKE '%" +
                 condition.get(3) + "%' and b.special_experience BETWEEN '" +

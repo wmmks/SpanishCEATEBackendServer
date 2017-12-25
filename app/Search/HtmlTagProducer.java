@@ -22,7 +22,7 @@ public class HtmlTagProducer {
                     singleQuotation(correctSentenceID) + ", '#AAAAAA', '#AAAAAA', false)\" " +
                     "onmouseout=\"changeColor(" + singleQuotation(originalSentenceID) + "," +
                     singleQuotation(correctSentenceID) + ", '#000000', '#000000', false)\" " +
-                    "id=" + sentenceID + " style=\"color: rgb(0, 0, 0);\">";
+                    "ID=" + sentenceID + " style=\"color: rgb(0, 0, 0);\">";
         } else {
             tag = "<span style=\"color: blue;\"><u>";
         }
@@ -56,7 +56,7 @@ public class HtmlTagProducer {
                     singleQuotation(correctWordID) + ", '#AA0000', '#66AA00', true)\" " +
                     "onmouseout=\"changeColor(" + singleQuotation(originalWordID) + "," +
                     singleQuotation(correctWordID) + ", '#E46650', '#000000', false)\" " +
-                    "id=" + wordID + " style=" + doubleQuotation(color) + ">" + word + "</span></span>";
+                    "ID=" + wordID + " style=" + doubleQuotation(color) + ">" + word + "</span></span>";
         } else {
             tag = word;
         }

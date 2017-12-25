@@ -23,11 +23,11 @@ public class DatabaseColumnNameVariableTable {
     public static String usersSpecialExperienceTableName="users_special_experience";
     public static String[] tablesNameList = {usersInformationTableName, articlesInformationTableName, classInformationTableName, usersSpecialExperienceTableName, articlesContentTableName};
     /*
-        *  genneric column: It is the id column for all table.
+        *  genneric column: It is the ID column for all table.
          */
-    public static String id = "id";
+    public static String ID = "ID";
 
-    public static String[] genericColumnNameList = {id};
+    public static String[] genericColumnNameList = {ID};
     /**
          *articles_information column Name List: the column name of articles_information table
          */
@@ -51,7 +51,7 @@ public class DatabaseColumnNameVariableTable {
     public static String chineseName = "chinese_name";
     public static String spanishName = "spanish_name";
     public static String GENDER = "gender";
-    public static String schoolName = "school_name";
+    public static String SCHOOL_NAME = "school_name";
     public static String studentId = "student_id";
     public static String schoolSystem = "school_system";
     public static String DEPARTMENT = "department";
@@ -65,7 +65,7 @@ public class DatabaseColumnNameVariableTable {
     public static String dateOfAgreementSubmit = "date_of_agreement_submit";
     public static String level = "level";
     public static String collector = "collector";
-    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, GENDER, schoolName, studentId, schoolSystem, DEPARTMENT, grade, group, LEARNING_HOURS, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit, level, collector};
+    public static String[] userInformationColumnNameList = {idUnderYear, chineseName, spanishName, GENDER, SCHOOL_NAME, studentId, schoolSystem, DEPARTMENT, grade, group, LEARNING_HOURS, learningYears, learningMonths, wisconsinNumberOfCorrect, wisconsinScore, dateOfAgreementSubmit, level, collector};
     /*
         *  user_special_information column Name List: the column name of special_information table;
         * */
