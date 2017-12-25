@@ -25,7 +25,7 @@ public class DatabaseColumnNameVariableTable {
     /*
         *  genneric column: It is the ID column for all table.
          */
-    public static String ID = "ID";
+    public static String ID = "id";
 
     public static String[] genericColumnNameList = {ID};
     /**

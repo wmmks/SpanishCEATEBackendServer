@@ -41,7 +41,7 @@ public class SearchPreProcessing {
         originalListList = palabra.getOriginalList();
         correctListList = palabra.getCorrectList();
         if (originalOrCorrect.equals("1")) {
-            String original_htmlSentence = "", original_sentence = "", original_sentence_id = "", original_article_id = "";
+            String original_sentence = "", original_sentence_id = "", original_article_id = "";
             for (List<Map<String, String>> originalList : originalListList) {
                 for (Map<String, String> original : originalList) {
                     for (String m : original.keySet()) {
@@ -50,8 +50,7 @@ public class SearchPreProcessing {
                                 original_article_id = original.get(m);
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE :
-                                original_sentence = original.get(m);
-                                original_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                original_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE_ID :
@@ -65,18 +64,18 @@ public class SearchPreProcessing {
                         break;
                     } else {
                         // Avoid DB Select Similar Term Problem!
-                        if (original_htmlSentence.contains("span")) {
+                        if (original_sentence.contains("span")) {
                             resultJsonObject.put(original_sentence_id + ""
                                     ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
                                             + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
                                             + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\">"
-                                            + original_htmlSentence + "</a>");
+                                            + original_sentence + "</a>");
                         }
                     }
                 }
             }
         } else if(originalOrCorrect.equals("2")) {
-            String correct_htmlSentence = "", correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
+            String correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
             for (List<Map<String, String>> correctList : correctListList) {
                 for (Map<String, String> correct : correctList) {
                     for (String m : correct.keySet()) {
@@ -85,8 +84,7 @@ public class SearchPreProcessing {
                                 correct_article_id = correct.get(m);
                                 break;
                             case ConstantField.CORRECT_SENTENCE :
-                                correct_sentence = correct.get(m);
-                                correct_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                correct_sentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
                                         matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
                                 break;
                             case ConstantField.CORRECT_SENTENCE_ID :
@@ -100,12 +98,12 @@ public class SearchPreProcessing {
                         break;
                     } else {
                         // Avoid DB Select Similar Term Problem!
-                        if (correct_htmlSentence.contains("span")) {
+                        if (correct_sentence.contains("span")) {
                             resultJsonObject.put(correct_sentence_id + ""
                                     ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
                                             + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
                                             + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\">"
-                                            + correct_htmlSentence + "</a>");
+                                            + correct_sentence + "</a>");
                         }
                     }
                 }
