@@ -4,7 +4,7 @@ package constantField;
  * Created by roye on 2017/4/26.
  */
 public class ConstantField {
-    static public final String userAndArticleID = "ID";
+    static public final String userAndArticleID = "id";
     static public final String userAndArticleSystemType = "system_type";
     static public final String databaseStringType = "VARCHAR";
     static public final String databaseIntType = "INT";
