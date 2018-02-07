@@ -67,9 +67,9 @@ public class SearchPreProcessing {
                         // Avoid DB Select Similar Term Problem!
                         if (original_htmlSentence.contains("span")) {
                             resultJsonObject.put(original_sentence_id + ""
-                                    ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
+                                    ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
                                             + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\">"
+                                            + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\'>"
                                             + original_htmlSentence + "</a>");
                         }
                     }
@@ -102,9 +102,9 @@ public class SearchPreProcessing {
                         // Avoid DB Select Similar Term Problem!
                         if (correct_htmlSentence.contains("span")) {
                             resultJsonObject.put(correct_sentence_id + ""
-                                    ,"<a href = \"/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
+                                    ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
                                             + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\">"
+                                            + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\'>"
                                             + correct_htmlSentence + "</a>");
                         }
                     }

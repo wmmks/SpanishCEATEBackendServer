@@ -229,9 +229,9 @@ class XMLMatchProcessor {
      * @return true or false
      */
     private boolean IsPauseMarkEnd(String text) {
-        return (text.contains(".") && text.indexOf(".") == (text.length() - 1)) ||
-                (text.contains("?") && text.indexOf("?") == (text.length() - 1)) ||
-                (text.contains("!") && text.indexOf("!") == (text.length() - 1));
+        return (text.contains(".") && text.lastIndexOf(".") == (text.length() - 1)) ||
+                (text.contains("?") && text.lastIndexOf("?") == (text.length() - 1)) ||
+                (text.contains("!") && text.lastIndexOf("!") == (text.length() - 1));
     }
 
     /**
