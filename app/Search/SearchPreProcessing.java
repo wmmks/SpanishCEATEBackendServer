@@ -51,8 +51,27 @@ public class SearchPreProcessing {
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE :
                                 original_sentence = original.get(m);
-                                original_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
-                                        matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
+                                /* original_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                        matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");*/
+                                String[] ss = original_sentence.split(" ");
+                                original_htmlSentence = "";
+                                for (int i = 0; i < ss.length ; i++) {
+                                    if (ss[i].equals(wordText)) {
+                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
+                                    } else if(ss[i].equals(wordText + ".")) {
+                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
+                                    } else if(ss[i].equals(wordText + ",")) {
+                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
+                                    } else if(ss[i].equals(wordText + "!")) {
+                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
+                                    } else if(ss[i].equals(wordText + "?")) {
+                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
+                                    } else if (i != ss.length - 1) {
+                                        original_htmlSentence += ss[i] + " ";
+                                    } else {
+                                        original_htmlSentence += ss[i];
+                                    }
+                                }
                                 break;
                             case ConstantField.ORIGINAL_SENTENCE_ID :
                                 original_sentence_id = original.get(m);
@@ -86,8 +105,27 @@ public class SearchPreProcessing {
                                 break;
                             case ConstantField.CORRECT_SENTENCE :
                                 correct_sentence = correct.get(m);
-                                correct_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
-                                        matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");
+                                /* correct_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
+                                        matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");*/
+                                String[] ss = correct_sentence.split(" ");
+                                correct_htmlSentence = "";
+                                for (int i = 0; i < ss.length ; i++) {
+                                    if (ss[i].equals(wordText)) {
+                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
+                                    } else if(ss[i].equals(wordText + ".")) {
+                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
+                                    } else if(ss[i].equals(wordText + ",")) {
+                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
+                                    } else if(ss[i].equals(wordText + "!")) {
+                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
+                                    } else if(ss[i].equals(wordText + "?")) {
+                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
+                                    } else if (i != ss.length - 1) {
+                                        correct_htmlSentence += ss[i] + " ";
+                                    } else {
+                                        correct_htmlSentence += ss[i];
+                                    }
+                                }
                                 break;
                             case ConstantField.CORRECT_SENTENCE_ID :
                                 correct_sentence_id = correct.get(m);
