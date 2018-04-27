@@ -29,6 +29,16 @@ class SearchType {
     private List<List<Map<String, String>>> correctList;
 
     /**
+     * Original Position List.
+     */
+    private List<Integer> originalPositionList;
+
+    /**
+     * Correct Position List.
+     */
+    private List<Integer> correctPositionList;
+
+    /**
      * Lemma List.
      */
     private List lemmaList;
@@ -55,6 +65,8 @@ class SearchType {
         String nextWordID;
         originalList = new ArrayList<>();
         correctList = new ArrayList<>();
+        originalPositionList = new ArrayList<>();
+        correctPositionList = new ArrayList<>();
         // Palabra POS POS
         if (!nextWordPOS.equals("") && !wordPOS.equals("") && !wordText.equals("")) {
             List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
@@ -64,7 +76,7 @@ class SearchType {
                     if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).isEmpty()) {
                         nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).get(0).toString();
                         if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
-                            sentenceIDInListByOriginal.add(sentenceID.split(":")[0]);
+                            sentenceIDInListByOriginal.add(sentenceID);
                         }
                     }
                 }
@@ -73,7 +85,7 @@ class SearchType {
                     if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).isEmpty()) {
                         nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).get(0).toString();
                         if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
-                            sentenceIDInListByCorrect.add(sentenceID.split(":")[0]);
+                            sentenceIDInListByCorrect.add(sentenceID);
                         }
                     }
                 }
@@ -108,13 +120,15 @@ class SearchType {
             }
         }
         for (String sentenceID : sentenceIDInListByOriginal) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.ORIGINAL).size() != 0) {
-                originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.ORIGINAL));
+            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL).size() != 0) {
+                originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL));
+                originalPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
             }
         }
         for (String sentenceID : sentenceIDInListByCorrect) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.CORRECT).size() != 0) {
-                correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.CORRECT));
+            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT).size() != 0) {
+                correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT));
+                correctPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
             }
         }
     }
@@ -170,6 +184,22 @@ class SearchType {
      */
     List getCorrectList() {
         return correctList;
+    }
+
+    /**
+     * Get Original Position List.
+     * @return originalPositionList
+     */
+    List getOriginalPositionList() {
+        return originalPositionList;
+    }
+
+    /**
+     * Get Correct Position List.
+     * @return correctPositionList
+     */
+    List getCorrectPositionList() {
+        return correctPositionList;
     }
 
     /**

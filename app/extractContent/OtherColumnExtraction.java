@@ -54,20 +54,22 @@ public class OtherColumnExtraction {
                     textAndPosWordIDList.add(resultSet.getObject(1).toString());
                 }
                 return textAndPosWordIDList;
-            // 會出現 0~多
+            // 會出現 0~多(sentence id : position)
             case ConstantField.SENTENCE_ID_BY_ORIGINAL :
                 ArrayList<String> sentenceIDByOriginal = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
-                    sentenceIDByOriginal.add(resultSet.getObject(2).toString());
+                    sentenceIDByOriginal.add(resultSet.getObject(2).toString()
+                            + ":" + resultSet.getObject(4).toString());
                 }
                 return sentenceIDByOriginal;
-            // 會出現 0~多
+            // 會出現 0~多(sentence id : position)
             case ConstantField.SENTENCE_ID_BY_CORRECT :
                 ArrayList<String> sentenceIDByCorrect = new ArrayList<>();
                 resultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
-                    sentenceIDByCorrect.add(resultSet.getObject(2).toString());
+                    sentenceIDByCorrect.add(resultSet.getObject(2).toString()
+                            + ":" + resultSet.getObject(4).toString());
                 }
                 return sentenceIDByCorrect;
             // 會出現 0~多

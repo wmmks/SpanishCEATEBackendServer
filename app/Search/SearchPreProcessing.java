@@ -12,7 +12,6 @@ import sqlCommandLogic.SqlCommandComposer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * Search Post Processing.
@@ -36,115 +35,151 @@ public class SearchPreProcessing {
         JSONObject resultJsonObject = new JSONObject();
         List<List<Map<String, String>>> originalListList;
         List<List<Map<String, String>>> correctListList;
+        List<Integer> originalPositionList;
+        List<Integer> correctPositionList;
         SearchType palabra = new SearchType();
         palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS);
         originalListList = palabra.getOriginalList();
         correctListList = palabra.getCorrectList();
+        originalPositionList = palabra.getOriginalPositionList();
+        correctPositionList = palabra.getCorrectPositionList();
+        String originalPriorResult = "";
+        String correctPriorResult = "";
         if (originalOrCorrect.equals("1")) {
             String original_htmlSentence = "", original_sentence = "", original_sentence_id = "", original_article_id = "";
-            for (List<Map<String, String>> originalList : originalListList) {
-                for (Map<String, String> original : originalList) {
-                    for (String m : original.keySet()) {
-                        switch (m) {
-                            case ConstantField.ORIGINAL_ARTICLE_ID :
-                                original_article_id = original.get(m);
-                                break;
-                            case ConstantField.ORIGINAL_SENTENCE :
-                                original_sentence = original.get(m);
-                                /* original_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
-                                        matcher(original.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");*/
-                                String[] ss = original_sentence.split(" ");
-                                original_htmlSentence = "";
-                                for (int i = 0; i < ss.length ; i++) {
-                                    if (ss[i].equals(wordText)) {
-                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
-                                    } else if(ss[i].equals(wordText + ".")) {
-                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
-                                    } else if(ss[i].equals(wordText + ",")) {
-                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
-                                    } else if(ss[i].equals(wordText + "!")) {
-                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
-                                    } else if(ss[i].equals(wordText + "?")) {
-                                        original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
-                                    } else if (i != ss.length - 1) {
-                                        original_htmlSentence += ss[i] + " ";
-                                    } else {
-                                        original_htmlSentence += ss[i];
+            for (int i = 0; i < originalListList.size(); i++) {
+                for (String m : originalListList.get(i).get(0).keySet()) {
+                    switch (m) {
+                        case ConstantField.ORIGINAL_ARTICLE_ID :
+                            original_article_id = originalListList.get(i).get(0).get(m);
+                            break;
+                        case ConstantField.ORIGINAL_SENTENCE :
+                            int flag = 0;
+                            // 上一篇為重複的文章及句子但不同 position !
+                            if (originalPriorResult.equals("")) {
+                                original_sentence = originalListList.get(i).get(0).get(m);
+                            } else {
+                                original_sentence = originalPriorResult;
+                                flag--;
+                            }
+                            String[] ss = original_sentence.split(" ");
+                            original_htmlSentence = "";
+                            for (int j = 0; j < ss.length ; j++) {
+                                if (ss[j].equals(wordText) && j == originalPositionList.get(i) - flag) {
+                                    original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
+                                } else if(ss[j].equals(wordText + ".") && j == originalPositionList.get(i) - flag) {
+                                    original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
+                                } else if(ss[j].equals(wordText + ",") && j == originalPositionList.get(i) - flag) {
+                                    original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
+                                    flag++;
+                                } else if(ss[j].equals(wordText + "!") && j == originalPositionList.get(i) - flag) {
+                                    original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
+                                } else if(ss[j].equals(wordText + "?") && j == originalPositionList.get(i) - flag) {
+                                    original_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
+                                } else if (j != ss.length - 1) {
+                                    original_htmlSentence += ss[j] + " ";
+                                    if (ss[j].contains(",")) {
+                                        flag++;
                                     }
+                                } else {
+                                    original_htmlSentence += ss[j];
                                 }
-                                break;
-                            case ConstantField.ORIGINAL_SENTENCE_ID :
-                                original_sentence_id = original.get(m);
-                                break;
-                            default:
-                                break;
+                            }
+                            break;
+                        case ConstantField.ORIGINAL_SENTENCE_ID :
+                            original_sentence_id = originalListList.get(i).get(0).get(m);
+                            break;
+                        default:
+                            break;
                         }
-                    }
-                    if(!palabra.judgeExists(original_article_id, userDataJsonObject)) {
-                        break;
+                }
+                // 判斷下一句是否是同一篇文章的同一句
+                if (i < originalListList.size() - 1) {
+                    if (originalListList.get(i + 1).get(0).get(ConstantField.ORIGINAL_SENTENCE_ID).equals(original_sentence_id)
+                            && originalListList.get(i + 1).get(0).get(ConstantField.ORIGINAL_ARTICLE_ID).equals(original_article_id)) {
+                        originalPriorResult = original_htmlSentence;
+                        continue;
                     } else {
-                        // Avoid DB Select Similar Term Problem!
-                        if (original_htmlSentence.contains("span")) {
-                            resultJsonObject.put(original_sentence_id + ""
-                                    ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
-                                            + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\'>"
-                                            + original_htmlSentence + "</a>");
-                        }
+                        originalPriorResult = "";
+                    }
+                }
+                if(palabra.judgeExists(original_article_id, userDataJsonObject)) {
+                    // Avoid DB Select Similar Term Problem!
+                    if (original_htmlSentence.contains("span")) {
+                        resultJsonObject.put(original_sentence_id + ""
+                                ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + original_article_id
+                                        + "&sentenceID=" + original_sentence_id + "&query=" + wordText + "&source="
+                                        + ConstantField.ORIGINAL  + "&sentence=" + original_sentence + "\'>"
+                                        + original_htmlSentence + "</a>");
                     }
                 }
             }
         } else if(originalOrCorrect.equals("2")) {
             String correct_htmlSentence = "", correct_sentence = "", correct_sentence_id = "", correct_article_id = "";
-            for (List<Map<String, String>> correctList : correctListList) {
-                for (Map<String, String> correct : correctList) {
-                    for (String m : correct.keySet()) {
-                        switch (m) {
-                            case ConstantField.CORRECT_ARTICLE_ID :
-                                correct_article_id = correct.get(m);
-                                break;
-                            case ConstantField.CORRECT_SENTENCE :
-                                correct_sentence = correct.get(m);
-                                /* correct_htmlSentence = Pattern.compile("(" + wordText + ")", Pattern.CASE_INSENSITIVE).
-                                        matcher(correct.get(m)).replaceAll("<span style=\"color:#FF0000;\">$1</span>");*/
-                                String[] ss = correct_sentence.split(" ");
-                                correct_htmlSentence = "";
-                                for (int i = 0; i < ss.length ; i++) {
-                                    if (ss[i].equals(wordText)) {
-                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
-                                    } else if(ss[i].equals(wordText + ".")) {
-                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
-                                    } else if(ss[i].equals(wordText + ",")) {
-                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
-                                    } else if(ss[i].equals(wordText + "!")) {
-                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
-                                    } else if(ss[i].equals(wordText + "?")) {
-                                        correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
-                                    } else if (i != ss.length - 1) {
-                                        correct_htmlSentence += ss[i] + " ";
-                                    } else {
-                                        correct_htmlSentence += ss[i];
+            for (int i = 0; i < correctListList.size(); i++) {
+                for (String m : correctListList.get(i).get(0).keySet()) {
+                    switch (m) {
+                        case ConstantField.CORRECT_ARTICLE_ID :
+                            correct_article_id = correctListList.get(i).get(0).get(m);
+                            break;
+                        case ConstantField.CORRECT_SENTENCE :
+                            int flag = 0;
+                            // 上一篇為重複的文章及句子但不同 position !
+                            if (correctPriorResult.equals("")) {
+                                correct_sentence = correctListList.get(i).get(0).get(m);
+                            } else {
+                                correct_sentence = correctPriorResult;
+                                flag--;
+                            }
+                            String[] ss = correct_sentence.split(" ");
+                            correct_htmlSentence = "";
+                            for (int j = 0; j < ss.length ; j++) {
+                                if (ss[j].equals(wordText) && j == correctPositionList.get(i) - flag) {
+                                    correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
+                                } else if(ss[j].equals(wordText + ".") && j == correctPositionList.get(i) - flag) {
+                                    correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
+                                } else if(ss[j].equals(wordText + ",") && j == correctPositionList.get(i) - flag) {
+                                    correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
+                                    flag++;
+                                } else if(ss[j].equals(wordText + "!") && j == correctPositionList.get(i) - flag) {
+                                    correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
+                                } else if(ss[j].equals(wordText + "?") && j == correctPositionList.get(i) - flag) {
+                                    correct_htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
+                                } else if (j != ss.length - 1) {
+                                    correct_htmlSentence += ss[j] + " ";
+                                    if (ss[j].contains(",")) {
+                                        flag++;
                                     }
+                                } else {
+                                    correct_htmlSentence += ss[j];
                                 }
-                                break;
-                            case ConstantField.CORRECT_SENTENCE_ID :
-                                correct_sentence_id = correct.get(m);
-                                break;
-                            default:
-                                break;
-                        }
+                            }
+                            break;
+                        case ConstantField.CORRECT_SENTENCE_ID :
+                            correct_sentence_id = correctListList.get(i).get(0).get(m);
+                            break;
+                        default:
+                            break;
                     }
-                    if(!palabra.judgeExists(correct_article_id, userDataJsonObject)) {
-                        break;
+                }
+                // 判斷下一句是否是同一篇文章的同一句
+                if (i < correctListList.size() - 1) {
+                    if (correctListList.get(i + 1).get(0).get(ConstantField.CORRECT_SENTENCE_ID).equals(correct_sentence_id)
+                            && correctListList.get(i + 1).get(0).get(ConstantField.CORRECT_ARTICLE_ID).equals(correct_article_id)) {
+                        correctPriorResult = correct_htmlSentence;
+                        continue;
                     } else {
-                        // Avoid DB Select Similar Term Problem!
-                        if (correct_htmlSentence.contains("span")) {
-                            resultJsonObject.put(correct_sentence_id + ""
-                                    ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
-                                            + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
-                                            + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\'>"
-                                            + correct_htmlSentence + "</a>");
-                        }
+                        correctPriorResult = "";
+                    }
+                }
+                if(palabra.judgeExists(correct_article_id, userDataJsonObject)) {
+                    // Avoid DB Select Similar Term Problem!
+                    if (correct_htmlSentence.contains("span")) {
+                        resultJsonObject.put(correct_sentence_id + ""
+                                ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + correct_article_id
+                                        + "&sentenceID=" + correct_sentence_id + "&query=" + wordText + "&source="
+                                        + ConstantField.CORRECT + "&sentence=" + correct_sentence + "\'>"
+                                        + correct_htmlSentence + "</a>");
                     }
                 }
             }

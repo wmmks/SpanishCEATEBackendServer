@@ -14,7 +14,7 @@ public class ConstantField {
     static public final String ARTICLE_ID = "article_id";
     static public final String SENTENCE_ID = "sentence_id";
     static public final String ORIGINAL_SENTENCE = "original_sentence";
-    static public final String ORIGINAL_SENTENCE_ID = "original_article";
+    static public final String ORIGINAL_SENTENCE_ID = "original_sentence_id";
     static public final String ORIGINAL_ARTICLE = "original_article";
     static public final String ORIGINAL_ARTICLE_ID = "original_article_id";
     static public final String CORRECT_SENTENCE = "correct_sentence";
