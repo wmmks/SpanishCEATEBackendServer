@@ -21,6 +21,10 @@ public class ConstantField {
     static public final String CORRECT_SENTENCE_ID = "correct_sentence_id";
     static public final String CORRECT_ARTICLE_ID = "correct_article_id";
     static public final String CORRECT_ARTICLE = "correct_article";
+    static public final String _SENTENCE = "_sentence";
+    static public final String _SENTENCE_ID = "_sentence_id";
+    static public final String _ARTICLE_ID = "_article_id";
+    static public final String _ARTICLE = "_article";
     static public final String ORIGINAL_OR_CORRECT = "original_or_correct";
     static public final String SOURCE = "source";
     static public final String ORIGINAL = "original";
