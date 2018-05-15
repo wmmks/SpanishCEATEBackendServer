@@ -38,15 +38,16 @@ public class SearchPreProcessing {
         List<Integer> originalPositionList;
         List<Integer> correctPositionList;
         SearchType palabra = new SearchType();
-        palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS);
-        originalListList = palabra.getOriginalList();
-        correctListList = palabra.getCorrectList();
-        originalPositionList = palabra.getOriginalPositionList();
-        correctPositionList = palabra.getCorrectPositionList();
         if (originalOrCorrect.equals("1")) {
+            palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.ORIGINAL);
+            originalListList = palabra.getOriginalList();
+            originalPositionList = palabra.getOriginalPositionList();
             resultJsonObject = htmlString(userDataJsonObject, palabra, ConstantField.ORIGINAL,
                     originalListList, originalPositionList);
         } else if(originalOrCorrect.equals("2")) {
+            palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.CORRECT);
+            correctListList = palabra.getCorrectList();
+            correctPositionList = palabra.getCorrectPositionList();
             resultJsonObject = htmlString(userDataJsonObject, palabra, ConstantField.CORRECT,
                     correctListList, correctPositionList);
         }
@@ -54,10 +55,12 @@ public class SearchPreProcessing {
     }
 
     /**
-     *
+     * Html Format.
      */
     public JSONObject htmlString(JSONObject userDataJsonObject, SearchType palabra , String type,
                                  List<List<Map<String, String>>> listList, List<Integer> positionList) throws SQLException {
+        // Sentence Temperate
+        String sentenceTem;
         JSONObject resultJsonObject = new JSONObject();
         String wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
         String priorResult = "";
@@ -71,11 +74,12 @@ public class SearchPreProcessing {
                     // 上一篇為重複的文章及句子但不同 position !
                     if (priorResult.equals("")) {
                         sentence = listList.get(i).get(0).get(m);
+                        sentenceTem = sentence;
                     } else {
-                        sentence = priorResult;
+                        sentenceTem = priorResult;
                         flag--;
                     }
-                    String[] ss = sentence.split(" ");
+                    String[] ss = sentenceTem.split(" ");
                     htmlSentence = "";
                     for (int j = 0; j < ss.length ; j++) {
                         if (ss[j].equals(wordText) && j == positionList.get(i) - flag) {

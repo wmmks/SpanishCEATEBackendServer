@@ -56,10 +56,8 @@ class SearchType {
      * @param nextWordPOS next word pos
      * @throws SQLException SQL Exception
      */
-    void setSentenceOfPalabra(String wordText, String wordPOS, String nextWordPOS) throws SQLException {
+    void setSentenceOfPalabra(String wordText, String wordPOS, String nextWordPOS, String type) throws SQLException {
         List<List<String>> wordIDListInList = new ArrayList<>();
-        List<List<String>> wordIDListInListByOriginal;
-        List<List<String>> wordIDListInListByCorrect;
         List<String> sentenceIDInListByOriginal = new ArrayList<>();
         List<String> sentenceIDInListByCorrect = new ArrayList<>();
         List<String> sentenceIDByOriginal, sentenceIDByCorrect;
@@ -72,67 +70,67 @@ class SearchType {
         if (!nextWordPOS.equals("") && !wordPOS.equals("") && !wordText.equals("")) {
             List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
             for (String wordId : wordIDList) {
-                sentenceIDByOriginal = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_ORIGINAL);
-                for (String sentenceID : sentenceIDByOriginal) {
-                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).isEmpty()) {
-                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).get(0).toString();
-                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
-                            sentenceIDInListByOriginal.add(sentenceID);
+                if (type.equals(ConstantField.ORIGINAL)) {
+                    sentenceIDByOriginal = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_ORIGINAL);
+                    for (String sentenceID : sentenceIDByOriginal) {
+                        if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).isEmpty()) {
+                            nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).get(0).toString();
+                            if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
+                                sentenceIDInListByOriginal.add(sentenceID);
+                            }
+                        }
+                    }
+                } else if (type.equals(ConstantField.CORRECT)) {
+                    sentenceIDByCorrect = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_CORRECT);
+                    for (String sentenceID : sentenceIDByCorrect) {
+                        if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).isEmpty()) {
+                            nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).get(0).toString();
+                            if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
+                                sentenceIDInListByCorrect.add(sentenceID);
+                            }
                         }
                     }
                 }
-                sentenceIDByCorrect = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_CORRECT);
-                for (String sentenceID : sentenceIDByCorrect) {
-                    if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).isEmpty()) {
-                        nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).get(0).toString();
-                        if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
-                            sentenceIDInListByCorrect.add(sentenceID);
-                        }
+            }
+        } else {
+            // Palabra POS
+            if (!wordPOS.equals("") && !wordText.equals("")) {
+                wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID));
+            }
+            // Palabra
+            else {
+                wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText, ConstantField.WORD_ID));
+            }
+            if(type.equals(ConstantField.ORIGINAL)) {
+                for (List<String> wordIDList : wordIDListInList) {
+                    for (String wordID : wordIDList) {
+                        sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_ORIGINAL));
                     }
                 }
-            }
-        } else if (!wordPOS.equals("") && !wordText.equals("")) { // Palabra POS
-            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID));
-            wordIDListInListByOriginal = wordIDListInList;
-            wordIDListInListByCorrect = wordIDListInList;
-            for (List<String> wordIDList : wordIDListInListByOriginal) {
-                for (String wordID : wordIDList) {
-                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_ORIGINAL));
-                }
-            }
-            for (List<String> wordIDList : wordIDListInListByCorrect) {
-                for (String wordID : wordIDList) {
-                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_CORRECT));
-                }
-            }
-        } else { // Palabra
-            wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText, ConstantField.WORD_ID));
-            wordIDListInListByOriginal = wordIDListInList;
-            wordIDListInListByCorrect = wordIDListInList;
-            for (List<String> wordIDList : wordIDListInListByOriginal) {
-                for (String wordID : wordIDList) {
-                    sentenceIDInListByOriginal.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_ORIGINAL));
-                }
-            }
-            for (List<String> wordIDList : wordIDListInListByCorrect) {
-                for (String wordID : wordIDList) {
-                    sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_CORRECT));
+            } else if(type.equals(ConstantField.CORRECT)) {
+                for (List<String> wordIDList : wordIDListInList) {
+                    for (String wordID : wordIDList) {
+                        sentenceIDInListByCorrect.addAll(otherColumnExtraction.getOtherColumnExtraction(wordID, ConstantField.SENTENCE_ID_BY_CORRECT));
+                    }
                 }
             }
         }
         // 必須要有順序，SearchPreProcessing htmlString 才可以正常運作!
-        Collections.sort(sentenceIDInListByOriginal);
-        Collections.sort(sentenceIDInListByCorrect);
-        for (String sentenceID : sentenceIDInListByOriginal) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL).size() != 0) {
-                originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL));
-                originalPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
+        if (type.equals(ConstantField.ORIGINAL)) {
+            Collections.sort(sentenceIDInListByOriginal);
+            for (String sentenceID : sentenceIDInListByOriginal) {
+                if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL).size() != 0) {
+                    originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL));
+                    originalPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
+                }
             }
-        }
-        for (String sentenceID : sentenceIDInListByCorrect) {
-            if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT).size() != 0) {
-                correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT));
-                correctPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
+        } else if(type.equals(ConstantField.CORRECT)) {
+            Collections.sort(sentenceIDInListByCorrect);
+            for (String sentenceID : sentenceIDInListByCorrect) {
+                if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT).size() != 0) {
+                    correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT));
+                    correctPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
+                }
             }
         }
     }
