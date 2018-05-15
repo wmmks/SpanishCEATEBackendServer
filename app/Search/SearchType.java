@@ -7,6 +7,7 @@ import json.JSONObject;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -119,6 +120,9 @@ class SearchType {
                 }
             }
         }
+        // 必須要有順序，SearchPreProcessing htmlString 才可以正常運作!
+        Collections.sort(sentenceIDInListByOriginal);
+        Collections.sort(sentenceIDInListByCorrect);
         for (String sentenceID : sentenceIDInListByOriginal) {
             if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL).size() != 0) {
                 originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL));
