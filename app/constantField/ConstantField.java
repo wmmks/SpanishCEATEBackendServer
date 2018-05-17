@@ -24,13 +24,13 @@ public class ConstantField {
     static public final String _SENTENCE = "_sentence";
     static public final String _SENTENCE_ID = "_sentence_id";
     static public final String _ARTICLE_ID = "_article_id";
-    static public final String _ARTICLE = "_article";
     static public final String ORIGINAL_OR_CORRECT = "original_or_correct";
     static public final String SOURCE = "source";
     static public final String ORIGINAL = "original";
     static public final String CORRECT = "correct";
     static public final String WORD_ID = "wordID";
     static public final String TEXT_AND_POS_WORD_ID = "textAndPos_WordID";
+    static public final String TEXT_AND_POS_WORD_ID_FUZZY = "textAndPos_WordID_FUZZY";
     static public final String SENTENCE_ID_BY_ORIGINAL = "sentenceIDByOriginal";
     static public final String SENTENCE_ID_BY_CORRECT = "sentenceIDByCorrect";
     static public final String SENTENCE_ID_AND_POSITION_BY_ORIGINAL = "sentenceIDAndPositionByOriginal";

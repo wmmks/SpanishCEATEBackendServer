@@ -1,6 +1,5 @@
 package databaseUtil;
 
-import constantField.DatabaseColumnNameVariableTable;
 
 import java.io.FileInputStream;
 import java.io.IOException;

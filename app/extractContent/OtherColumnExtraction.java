@@ -3,6 +3,7 @@ package extractContent;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
 import databaseUtil.DatabaseController;
+
 import sqlCommandLogic.SqlCommandComposer;
 
 import javax.inject.Inject;
@@ -54,6 +55,15 @@ public class OtherColumnExtraction {
                     textAndPosWordIDList.add(resultSet.getObject(1).toString());
                 }
                 return textAndPosWordIDList;
+            case ConstantField.TEXT_AND_POS_WORD_ID_FUZZY :
+                List<String> textAndPosWordIDFuzzyList = new ArrayList<>();
+                String[] textAndPosWordIDFuzzy = object.toString().split(":");
+                resultSet = databaseController.execSelect(sqlCommandComposer.getOtherColumnSqlByTextAndPOSFuzzy
+                        (textAndPosWordIDFuzzy[0], textAndPosWordIDFuzzy[1]));
+                while (resultSet.next()) {
+                    textAndPosWordIDFuzzyList.add(resultSet.getObject(1).toString());
+                }
+                return textAndPosWordIDFuzzyList;
             // 會出現 0~多(sentence id : position)
             case ConstantField.SENTENCE_ID_BY_ORIGINAL :
                 ArrayList<String> sentenceIDByOriginal = new ArrayList<>();
@@ -78,7 +88,7 @@ public class OtherColumnExtraction {
                 resultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSqlByWordId(Integer.parseInt(object.toString())));
                 while (resultSet.next()) {
                     sentenceIDAndPositionByOriginal.add(resultSet.getObject(2).toString()
-                    + ":" + resultSet.getObject(4).toString());
+                            + ":" + resultSet.getObject(4).toString());
                 }
                 return sentenceIDAndPositionByOriginal;
             // 會出現 0~多
@@ -158,6 +168,18 @@ public class OtherColumnExtraction {
                     lemmaList.add(resultSet.getObject(1).toString().toLowerCase());
                 }
                 return lemmaList;
+            case DatabaseColumnNameVariableTable.FUZZY :
+                List<String> fuzzy = new ArrayList<>();
+                String[] fuzzyAndPos = object.toString().split(":");
+                resultSet = databaseController.execSelect(sqlCommandComposer.getTextAndPOSOfFuzzy(fuzzyAndPos[0], fuzzyAndPos[1]));
+                while (resultSet.next()) {
+                    fuzzy.add(resultSet.getString(1) + ":" + resultSet.getString(2));
+                }
+                if(fuzzy.size() > 0) {
+                    return fuzzy;
+                } else {
+                    return null;
+                }
             default:
                 return new ArrayList<>();
         }

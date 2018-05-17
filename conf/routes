@@ -10,6 +10,7 @@ POST    /updateUserData                  controllers.CeateBackendController.upda
 POST    /getSearchData                   controllers.CeateBackendController.getSearchData
 POST    /getSearchXMLAndAuthorInfoResult controllers.CeateBackendController.getSearchXMLAndAuthorInfoResult
 POST    /getSearchLemaData               controllers.CeateBackendController.getSearchLemmaData
+POST    /getFuzzyData                    controllers.CeateBackendController.getFuzzyData
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

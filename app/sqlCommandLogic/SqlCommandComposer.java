@@ -22,7 +22,11 @@ public class SqlCommandComposer {
         return sql;
     }
     public String getOtherColumnSqlByTextAndPOS(String text, String pos) {
-        String sql = "select * from words_table as a where a.text='" + text + "' and a.pos='" + pos + "'";
+        String sql = "select * from words_table as a where a.text='" + text + "' and a.pos like '" + pos + "=%'";
+        return sql;
+    }
+    public String getOtherColumnSqlByTextAndPOSFuzzy(String text, String pos) {
+        String sql = "select * from words_table as a where a.text='" + text + "' and a.pos like '%=" + pos + "'";
         return sql;
     }
     public String getOriginalSqlByWordId(int id) {
@@ -45,7 +49,7 @@ public class SqlCommandComposer {
     }
     public String getOtherColumnSqlByNextWordIDAndPOS(int nextWordID, String pos) {
         String sql = "select * from words_table as a where a.ID='"
-                + nextWordID + "'" + "and a.pos='" + pos + "'";
+                + nextWordID + "'" + "and a.pos like '" + pos + "=%'";
         return sql;
     }
     public String getOriginalSqlBySentenceId(int id) {
@@ -85,15 +89,20 @@ public class SqlCommandComposer {
                 condition.get(6).split("~")[0] + "' and '" + condition.get(6).split("~")[1] + "'and c.article_topic BETWEEN '" +
                 condition.get(7).split("~")[0] + "' and '" + condition.get(7).split("~")[1] + "'and c.writting_location BETWEEN '" +
                 condition.get(8).split("~")[0] + "' and '" + condition.get(8).split("~")[1] + "'and (c.submitted_year LIKE '%" +
-                condition.get(9).split("~")[0] + "%' OR " + "c.submitted_year LIKE '%" + condition.get(9).split("~")[1] + "%')";
-                return sql;
+                condition.get(9).split("~")[0] + "%' OR " + "c.submitted_year LIKE '%" + condition.get(9).split("~")[1] + "%' OR " +
+                "c.submitted_year BETWEEN '" + condition.get(9).split("~")[0] + "' and '" + condition.get(9).split("~")[1] + "')";
+        return sql;
     }
     public String getTextOfLemma(String lemma) {
         String sql = "SELECT text from `words_table` WHERE lemma = '" + lemma + "'";
         return sql;
     }
-    public UserData getUserData(JSONObject userDataJsonObject)
-    {
+    public String getTextAndPOSOfFuzzy(String fuzzy, String pos) {
+        String sql = "SELECT text, pos from `words_table` WHERE text like '%" + fuzzy + "' and pos like '%="
+                + pos + "'";
+        return sql;
+    }
+    public UserData getUserData(JSONObject userDataJsonObject) {
         String sql="";
         UserData userData=new UserData();
         Set<String> columnNameSet = userDataJsonObject.keySet();
@@ -143,8 +152,7 @@ public class SqlCommandComposer {
         userData.setArticleContentSqlObject(articleContentSqlObject);
         return userData;
     }
-    private int checkTableNumber(String columnName)
-    {
+    private int checkTableNumber(String columnName) {
         int tableNumber=-1;
         if(Arrays.asList(DatabaseColumnNameVariableTable.genericColumnNameList).contains(columnName))
         {

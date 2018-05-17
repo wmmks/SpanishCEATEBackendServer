@@ -119,6 +119,21 @@ public class CeateBackendController extends Controller {
     }
 
     /**
+     * Search Page Extract Lemma Link List Function.
+     */
+    public Result getFuzzyData() {
+        JsonNode request = request().body().asJson();
+        JsonNode result = Json.newObject();
+        SearchPreProcessing searchPostProcessing = new SearchPreProcessing();
+        try {
+            result = searchPostProcessing.setSearchProcessingOfFuzzy(new JSONObject(request.toString()));
+        } catch (SQLException e) {
+            e.getErrorCode();
+        }
+        return ok(result);
+    }
+
+    /**
      * Search Page Extract Original Article and Correct Article And Author Information Function.
      */
     public Result getSearchXMLAndAuthorInfoResult() {

@@ -22,14 +22,37 @@ import java.util.*;
  */
 public class SearchPreProcessing {
     /**
+     * Fuzzy String.
+     */
+    private String fuzzy = "";
+
+    /**
+     * Fuzzy Result JsonObject.
+     */
+    private JSONObject fuzzyResultJsonObject;
+
+    /**
+     * Search Type.
+     */
+    private SearchType palabra = new SearchType();
+
+    /**
      * Search Post Processing About Web Expression.
      * @param userDataJsonObject user data Json Object
      * @return result original or correct sentence link
      * @throws SQLException SQL Exception
      */
-    public JsonNode setSearchProcessingOfPalabra(JSONObject userDataJsonObject)  throws SQLException {
-        String wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
-        String wordPOS = userDataJsonObject.getString(ConstantField.WORD_POS);
+    public JsonNode setSearchProcessingOfPalabra(JSONObject userDataJsonObject) throws SQLException {
+        String wordText;
+        String wordPOS;
+        if (fuzzy.equals("")) {
+            wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
+            wordPOS = userDataJsonObject.getString(ConstantField.WORD_POS);
+        } else {
+            wordText = fuzzy.split(":")[0];
+            // @ 用來辨識是否為 fuzzy 搜尋的字符
+            wordPOS = fuzzy.split(":")[1] + "@";
+        }
         String nextWordPOS = userDataJsonObject.getString(ConstantField.NEXT_WORD_POS);
         String originalOrCorrect = userDataJsonObject.getString(ConstantField.ORIGINAL_OR_CORRECT);
         JSONObject resultJsonObject = new JSONObject();
@@ -37,19 +60,23 @@ public class SearchPreProcessing {
         List<List<Map<String, String>>> correctListList;
         List<Integer> originalPositionList;
         List<Integer> correctPositionList;
-        SearchType palabra = new SearchType();
         if (originalOrCorrect.equals("1")) {
             palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.ORIGINAL);
             originalListList = palabra.getOriginalList();
             originalPositionList = palabra.getOriginalPositionList();
-            resultJsonObject = htmlString(userDataJsonObject, palabra, ConstantField.ORIGINAL,
+            resultJsonObject = htmlString(userDataJsonObject, ConstantField.ORIGINAL,
                     originalListList, originalPositionList);
         } else if(originalOrCorrect.equals("2")) {
             palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.CORRECT);
             correctListList = palabra.getCorrectList();
             correctPositionList = palabra.getCorrectPositionList();
-            resultJsonObject = htmlString(userDataJsonObject, palabra, ConstantField.CORRECT,
+            resultJsonObject = htmlString(userDataJsonObject, ConstantField.CORRECT,
                     correctListList, correctPositionList);
+        }
+        if (!fuzzy.equals("")) {
+            for (String s : resultJsonObject.keySet()) {
+                fuzzyResultJsonObject.put(s, resultJsonObject.get(s));
+            }
         }
         return Json.parse(resultJsonObject.toString());
     }
@@ -57,12 +84,17 @@ public class SearchPreProcessing {
     /**
      * Html Format.
      */
-    public JSONObject htmlString(JSONObject userDataJsonObject, SearchType palabra , String type,
-                                 List<List<Map<String, String>>> listList, List<Integer> positionList) throws SQLException {
+    public JSONObject htmlString(JSONObject userDataJsonObject, String type, List<List<Map<String,
+            String>>> listList, List<Integer> positionList) throws SQLException {
         // Sentence Temperate
         String sentenceTem;
+        String wordText;
         JSONObject resultJsonObject = new JSONObject();
-        String wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
+        if(fuzzy.equals("")) {
+            wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
+        } else {
+            wordText = fuzzy.split(":")[0];
+        }
         String priorResult = "";
         String htmlSentence = "", sentence = "", sentence_id = "", article_id = "";
         for (int i = 0; i < listList.size(); i++) {
@@ -131,6 +163,24 @@ public class SearchPreProcessing {
     }
 
     /**
+     * Search Processing About Fuzzy.
+     * @param userDataJsonObject user data Json Object
+     * @return result text list of lemma link
+     * @throws SQLException SQL Exception
+     */
+    public JsonNode setSearchProcessingOfFuzzy(JSONObject userDataJsonObject) throws SQLException {
+        fuzzyResultJsonObject = new JSONObject();
+        palabra.setFuzzyOfPalabra(userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY));
+        List<String> fuzzyList = palabra.getFuzzyList();
+        for(String f : fuzzyList) {
+            fuzzy = f;
+            setSearchProcessingOfPalabra(userDataJsonObject);
+            fuzzy = "";
+        }
+        return Json.parse(fuzzyResultJsonObject.toString());
+    }
+
+    /**
      * Search Post Processing About Lemma Web Expression.
      * @param userDataJsonObject user data Json Object
      * @return result text list of lemma link
@@ -139,7 +189,6 @@ public class SearchPreProcessing {
     public JsonNode setSearchProcessingOfLemma(JSONObject userDataJsonObject) throws SQLException {
         Set<String> resultTextOfLemma = new HashSet<>();
         JSONObject textResult = new JSONObject();
-        SearchType palabra = new SearchType();
         palabra.setLemmaOfPalabra(userDataJsonObject.getString(DatabaseColumnNameVariableTable.LEMMA));
         List<String> lemmaList = palabra.getLemmaList();
         resultTextOfLemma.addAll(lemmaList);

@@ -96,4 +96,5 @@ public class DatabaseColumnNameVariableTable {
      * words_table.
      */
     public static final String LEMMA = "lemma";
+    public static final String FUZZY = "fuzzy";
 }

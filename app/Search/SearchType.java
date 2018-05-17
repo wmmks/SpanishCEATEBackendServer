@@ -6,10 +6,7 @@ import extractContent.OtherColumnExtraction;
 import json.JSONObject;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Type Searcher.
@@ -45,6 +42,11 @@ class SearchType {
     private List lemmaList;
 
     /**
+     * Fuzzy List.
+     */
+    private List fuzzyList;
+
+    /**
      * Extract Other Column.
      */
     private OtherColumnExtraction otherColumnExtraction = new OtherColumnExtraction();
@@ -68,23 +70,36 @@ class SearchType {
         correctPositionList = new ArrayList<>();
         // Palabra POS POS
         if (!nextWordPOS.equals("") && !wordPOS.equals("") && !wordText.equals("")) {
-            List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
-            for (String wordId : wordIDList) {
-                if (type.equals(ConstantField.ORIGINAL)) {
+            List<String> wordIDList;
+            // Fuzzy Search
+            if (wordPOS.contains("@")) {
+                wordPOS = wordPOS.replace("@", "");
+                wordPOS = wordPOS.split("=")[1];
+                wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID_FUZZY);
+            } else { // Normal Search
+                wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
+            }
+            //List<String> wordIDList = otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID);
+            if (type.equals(ConstantField.ORIGINAL)) {
+                for (String wordId : wordIDList) {
                     sentenceIDByOriginal = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_ORIGINAL);
                     for (String sentenceID : sentenceIDByOriginal) {
-                        if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).isEmpty()) {
-                            nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL).get(0).toString();
+                        List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_ORIGINAL);
+                        if (!list.isEmpty()) {
+                            nextWordID = list.get(0).toString();
                             if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
                                 sentenceIDInListByOriginal.add(sentenceID);
                             }
                         }
                     }
-                } else if (type.equals(ConstantField.CORRECT)) {
+                }
+            } else if (type.equals(ConstantField.CORRECT)) {
+                for (String wordId : wordIDList) {
                     sentenceIDByCorrect = otherColumnExtraction.getOtherColumnExtraction(wordId, ConstantField.SENTENCE_ID_AND_POSITION_BY_CORRECT);
                     for (String sentenceID : sentenceIDByCorrect) {
-                        if (!otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).isEmpty()) {
-                            nextWordID = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT).get(0).toString();
+                        List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID, ConstantField.NEXT_WORD_ID_BY_CORRECT);
+                        if (!list.isEmpty()) {
+                            nextWordID = list.get(0).toString();
                             if (!otherColumnExtraction.getOtherColumnExtraction(nextWordID + ":" + nextWordPOS, ConstantField.NEXT_WORD_ID_AND_POS_WORD_ID).isEmpty()) {
                                 sentenceIDInListByCorrect.add(sentenceID);
                             }
@@ -95,7 +110,14 @@ class SearchType {
         } else {
             // Palabra POS
             if (!wordPOS.equals("") && !wordText.equals("")) {
-                wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID));
+                // Fuzzy Search
+                if (wordPOS.contains("@")) {
+                    wordPOS = wordPOS.replace("@", "");
+                    wordPOS = wordPOS.split("=")[1];
+                    wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID_FUZZY));
+                } else { // Normal Search
+                    wordIDListInList.add(otherColumnExtraction.getOtherColumnExtraction(wordText + ":" + wordPOS, ConstantField.TEXT_AND_POS_WORD_ID));
+                }
             }
             // Palabra
             else {
@@ -119,18 +141,41 @@ class SearchType {
         if (type.equals(ConstantField.ORIGINAL)) {
             Collections.sort(sentenceIDInListByOriginal);
             for (String sentenceID : sentenceIDInListByOriginal) {
-                if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL).size() != 0) {
-                    originalList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL));
+                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL);
+                if (list.size() != 0) {
+                    originalList.add(list);
                     originalPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
                 }
             }
         } else if(type.equals(ConstantField.CORRECT)) {
             Collections.sort(sentenceIDInListByCorrect);
             for (String sentenceID : sentenceIDInListByCorrect) {
-                if (otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT).size() != 0) {
-                    correctList.add(otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT));
+                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT);
+                if (list.size() != 0) {
+                    correctList.add(list);
                     correctPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
                 }
+            }
+        }
+    }
+
+    /**
+     * Produce Fuzzy Query Term.
+     * @param fuzzy lemma
+     * @throws SQLException SQL Exception
+     */
+    void setFuzzyOfPalabra(String fuzzy) throws SQLException {
+        fuzzyList = new ArrayList();
+        ArrayList<String> posList = new ArrayList<>();
+        posList.add("VEger");posList.add("VEinf");
+        posList.add("VHger");posList.add("VHinf");
+        posList.add("VLger");posList.add("VLinf");
+        posList.add("VMger");posList.add("VMinf");
+        posList.add("VSger");posList.add("VSinf");
+        for(String pos : posList) {
+            List<String> list = otherColumnExtraction.getOtherColumnExtraction(fuzzy + ":" + pos, DatabaseColumnNameVariableTable.FUZZY);
+            if (list != null){
+                fuzzyList.addAll(list);
             }
         }
     }
@@ -205,10 +250,18 @@ class SearchType {
     }
 
     /**
-     * Get Correct List.
-     * @return correctList
+     * Get Lemma List.
+     * @return lemmaList
      */
     List getLemmaList() {
         return lemmaList;
+    }
+
+    /**
+     * Get Fuzzy List.
+     * @return fuzzyList
+     */
+    List getFuzzyList() {
+        return fuzzyList;
     }
 }
