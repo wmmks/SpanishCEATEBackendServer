@@ -170,6 +170,22 @@ public class SearchPreProcessing {
      */
     public JsonNode setSearchProcessingOfFuzzy(JSONObject userDataJsonObject) throws SQLException {
         fuzzyResultJsonObject = new JSONObject();
+        // FUZZY CHECK
+        ArrayList<String> termList = new ArrayList<>();
+        int count = 0;
+        termList.add("me");termList.add("te");
+        termList.add("lo");termList.add("la");
+        termList.add("le");termList.add("nos");
+        termList.add("os");termList.add("los");
+        termList.add("las");termList.add("les");
+        for(String term : termList) {
+            if(userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY).toLowerCase().equals(term)){}
+            else {
+                count++;
+            }
+        }
+        if (count==termList.size()){return Json.parse(fuzzyResultJsonObject.toString());}
+        // FUZZY SEARCH
         palabra.setFuzzyOfPalabra(userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY));
         List<String> fuzzyList = palabra.getFuzzyList();
         for(String f : fuzzyList) {
