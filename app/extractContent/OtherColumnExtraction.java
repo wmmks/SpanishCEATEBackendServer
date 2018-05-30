@@ -170,16 +170,12 @@ public class OtherColumnExtraction {
                 return lemmaList;
             case DatabaseColumnNameVariableTable.FUZZY :
                 List<String> fuzzy = new ArrayList<>();
-                String[] fuzzyAndPos = object.toString().split(":");
-                resultSet = databaseController.execSelect(sqlCommandComposer.getTextAndPOSOfFuzzy(fuzzyAndPos[0], fuzzyAndPos[1]));
+                String fuzzyTerm = object.toString();
+                resultSet = databaseController.execSelect(sqlCommandComposer.getTextAndPOSOfFuzzy(fuzzyTerm));
                 while (resultSet.next()) {
                     fuzzy.add(resultSet.getString(1) + ":" + resultSet.getString(2));
                 }
-                if(fuzzy.size() > 0) {
-                    return fuzzy;
-                } else {
-                    return null;
-                }
+                return fuzzy;
             default:
                 return new ArrayList<>();
         }

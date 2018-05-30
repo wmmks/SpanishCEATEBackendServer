@@ -165,19 +165,7 @@ class SearchType {
      * @throws SQLException SQL Exception
      */
     void setFuzzyOfPalabra(String fuzzy) throws SQLException {
-        fuzzyList = new ArrayList();
-        ArrayList<String> posList = new ArrayList<>();
-        posList.add("VEger");posList.add("VEinf");
-        posList.add("VHger");posList.add("VHinf");
-        posList.add("VLger");posList.add("VLinf");
-        posList.add("VMger");posList.add("VMinf");
-        posList.add("VSger");posList.add("VSinf");
-        for(String pos : posList) {
-            List<String> list = otherColumnExtraction.getOtherColumnExtraction(fuzzy + ":" + pos, DatabaseColumnNameVariableTable.FUZZY);
-            if (list != null){
-                fuzzyList.addAll(list);
-            }
-        }
+        fuzzyList = otherColumnExtraction.getOtherColumnExtraction(fuzzy, DatabaseColumnNameVariableTable.FUZZY);
     }
 
     /**

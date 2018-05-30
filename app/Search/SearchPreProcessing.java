@@ -14,8 +14,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
- * Search Post Processing.
- * 將資料進行後處理以方便前端介面呈現。
+ * Search Pre Processing.
+ * 將資料進行前處理以方便前端介面呈現。
  * @version 1.0 2017年11月16日
  * @author Alex
  *

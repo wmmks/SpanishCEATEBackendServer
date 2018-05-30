@@ -97,9 +97,11 @@ public class SqlCommandComposer {
         String sql = "SELECT text from `words_table` WHERE lemma = '" + lemma + "'";
         return sql;
     }
-    public String getTextAndPOSOfFuzzy(String fuzzy, String pos) {
-        String sql = "SELECT text, pos from `words_table` WHERE text like '%" + fuzzy + "' and pos like '%="
-                + pos + "'";
+    public String getTextAndPOSOfFuzzy(String fuzzy) {
+        String sql = "SELECT text, pos from `words_table` WHERE text like '%" + fuzzy + "' and " +
+                "(pos like '%=VEger' or pos like '%=VEinf' or pos like '%=VHger' or pos like '%=VHinf'" +
+                " or pos like '%=VLger' or pos like '%=VLinf' or pos like '%=VMger' or pos like '%=VMinf' " +
+                "or pos like '%=VSger' or pos like '%=VSinf')";
         return sql;
     }
     public UserData getUserData(JSONObject userDataJsonObject) {
