@@ -137,7 +137,7 @@ class SearchType {
                 }
             }
         }
-        // 必須要有順序，SearchPreProcessing htmlString 才可以正常運作!
+        // 必須要有順序，SearchPreProcessing pageResult function 才可以正常運作(因有考慮上一個句子是否是同一篇同一句)!
         if (type.equals(ConstantField.ORIGINAL)) {
             Collections.sort(sentenceIDInListByOriginal);
             for (String sentenceID : sentenceIDInListByOriginal) {

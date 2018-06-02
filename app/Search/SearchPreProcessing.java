@@ -64,13 +64,13 @@ public class SearchPreProcessing {
             palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.ORIGINAL);
             originalListList = palabra.getOriginalList();
             originalPositionList = palabra.getOriginalPositionList();
-            resultJsonObject = htmlString(userDataJsonObject, ConstantField.ORIGINAL,
+            resultJsonObject = pageResult(userDataJsonObject, ConstantField.ORIGINAL,
                     originalListList, originalPositionList);
         } else if(originalOrCorrect.equals("2")) {
             palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.CORRECT);
             correctListList = palabra.getCorrectList();
             correctPositionList = palabra.getCorrectPositionList();
-            resultJsonObject = htmlString(userDataJsonObject, ConstantField.CORRECT,
+            resultJsonObject = pageResult(userDataJsonObject, ConstantField.CORRECT,
                     correctListList, correctPositionList);
         }
         if (!fuzzy.equals("")) {
@@ -84,54 +84,97 @@ public class SearchPreProcessing {
     /**
      * Html Format.
      */
-    public JSONObject htmlString(JSONObject userDataJsonObject, String type, List<List<Map<String,
+    public JSONObject pageResult(JSONObject userDataJsonObject, String type, List<List<Map<String,
             String>>> listList, List<Integer> positionList) throws SQLException {
-        // Sentence Temperate
-        String sentenceTem;
         String wordText;
         JSONObject resultJsonObject = new JSONObject();
+        // 判斷是否有 fuzzy
         if(fuzzy.equals("")) {
             wordText = userDataJsonObject.getString(ConstantField.WORD_TEXT);
         } else {
             wordText = fuzzy.split(":")[0];
         }
+        // 紀錄 span 位置
+        List<Integer> span = new ArrayList<>();
+        // 紀錄上一個句子的內容(如果是同一篇文章且同一句)
         String priorResult = "";
+        // resultJsonObject 所要求的內容，也就是前端呈現部分
         String htmlSentence = "", sentence = "", sentence_id = "", article_id = "";
+        // Sentence Temperate
+        String sentenceTem;
+        // 符號儲存
+        String[] notion = new String[]{";","(",")","—","\"","；","”","¿","¡","“",","
+                ,":","─","「","」","）","-","¨","=",".","?","!","－","–","´"};
         for (int i = 0; i < listList.size(); i++) {
             for (String m : listList.get(i).get(0).keySet()) {
                 if (m.equals(type + ConstantField._ARTICLE_ID)) {
                     article_id = listList.get(i).get(0).get(m);
                 } else if(m.equals(type + ConstantField._SENTENCE)) {
-                    int flag = 0;
+                    int position = 0;
+                    int spanPosition = 0;
+                    htmlSentence = "";
                     // 上一篇為重複的文章及句子但不同 position !
                     if (priorResult.equals("")) {
                         sentence = listList.get(i).get(0).get(m);
                         sentenceTem = sentence;
                     } else {
                         sentenceTem = priorResult;
-                        flag--;
+                        Collections.sort(span);
                     }
-                    String[] ss = sentenceTem.split(" ");
-                    htmlSentence = "";
-                    for (int j = 0; j < ss.length ; j++) {
-                        if (ss[j].equals(wordText) && j == positionList.get(i) - flag) {
-                            htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span> ";
-                        } else if(ss[j].equals(wordText + ".") && j == positionList.get(i) - flag) {
-                            htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>.";
-                        } else if(ss[j].equals(wordText + ",") && j == positionList.get(i) - flag) {
-                            htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>, ";
-                            flag++;
-                        } else if(ss[j].equals(wordText + "!") && j == positionList.get(i) - flag) {
-                            htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>!";
-                        } else if(ss[j].equals(wordText + "?") && j == positionList.get(i) - flag) {
-                            htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>?";
-                        } else if (j != ss.length - 1) {
-                            htmlSentence += ss[j] + " ";
-                            if (ss[j].contains(",")) {
-                                flag++;
+                    char[] charArray = sentenceTem.toCharArray();
+                    // 判斷是否是符號
+                    boolean b;
+                    String temp = "";
+                    for (int j = 0; j < charArray.length; j++) {
+                        // 記錄過去的位置有經過就去減九(因為 span 加上去大約多移 9 個 position)
+                        if (span.size() > 0 && spanPosition < span.size()) {
+                            if (position == span.get(spanPosition)) {
+                                position -= 9;
+                                spanPosition++;
                             }
-                        } else {
-                            htmlSentence += ss[j];
+                        }
+                        // 空白判斷器，並將已組成的詞彙加入
+                        if ((charArray[j] + "").equals(" ")) {
+                            if (temp.equals(wordText) &&  position == positionList.get(i)) {
+                                htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                            } else {
+                                htmlSentence += temp;
+                            }
+                            if (!temp.equals("")) {
+                                position++;
+                            }
+                            htmlSentence += " ";
+                            temp = "";
+                            continue;
+                        }
+                        // 符號判斷器，並將已組成的詞彙加入
+                        b = false;
+                        for (String n : notion) {
+                            if ((charArray[j] + "").equals(n)) {
+                                if (temp.equals(wordText) &&  position == positionList.get(i)) {
+                                    htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                                } else {
+                                    htmlSentence += temp;
+                                }
+                                if (!temp.equals("")) {
+                                    position++;
+                                }
+                                temp = "";
+                                htmlSentence += n;
+                                // 符號 '...' 視為一個位置，而 '¿' 或 '¡' 則不當成一個位置!
+                                if (j < charArray.length - 1) {
+                                    if ((charArray[j + 1] == '.' && charArray[j] == '.') || n == "¿" || n == "¡");
+                                    else {
+                                        position++;
+                                    }
+                                }
+                                b = true;
+                                break;
+                            }
+                        }
+                        // 詞彙組成器
+                        if (!b) {
+                            temp += charArray[j];
                         }
                     }
                 } else if(m.equals(type + ConstantField._SENTENCE_ID)) {
@@ -143,11 +186,14 @@ public class SearchPreProcessing {
                 if (listList.get(i + 1).get(0).get(type + ConstantField._SENTENCE_ID).equals(sentence_id)
                         && listList.get(i + 1).get(0).get(type + ConstantField._ARTICLE_ID).equals(article_id)) {
                     priorResult = htmlSentence;
+                    span.add(positionList.get(i));
                     continue;
                 } else {
                     priorResult = "";
+                    span = new ArrayList<>();
                 }
             }
+            // 主要判斷是否有符合要求的條件，以及存在 span 才可輸出到前端頁面
             if(palabra.judgeExists(article_id, userDataJsonObject)) {
                 // Avoid DB Select Similar Term Problem!
                 if (htmlSentence.contains("span")) {

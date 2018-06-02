@@ -31,6 +31,9 @@ public class CeateBackendController extends Controller {
         return ok("HelloWorld");
     }
 
+    /**
+     * Check Page Get User Data Function.
+     */
     public Result getUserData() {
         DatabaseController databaseController = new DatabaseController();
         JsonNode request = request().body().asJson();
@@ -119,7 +122,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Extract Lemma Link List Function.
+     * Search Page Fuzzy Function.
      */
     public Result getFuzzyData() {
         JsonNode request = request().body().asJson();
