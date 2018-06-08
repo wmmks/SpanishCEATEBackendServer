@@ -175,6 +175,14 @@ public class SearchPreProcessing {
                         // 詞彙組成器
                         if (!b) {
                             temp += charArray[j];
+                            // 最後一個字如果沒有標點符號結尾，還是必須加上去!
+                            if (j == charArray.length - 1) {
+                                if (temp.equals(wordText) &&  position == positionList.get(i)) {
+                                    htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                                } else {
+                                    htmlSentence += temp;
+                                }
+                            }
                         }
                     }
                 } else if(m.equals(type + ConstantField._SENTENCE_ID)) {
