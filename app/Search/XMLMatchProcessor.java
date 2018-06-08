@@ -33,6 +33,8 @@ class XMLMatchProcessor {
      * @throws DocumentException Document Exception
      */
     void setXMLMatchParser(String xml, String articleSource) throws DocumentException {
+        Pattern p = Pattern.compile("[^\\u0009\\u000A\\u000D\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFF]+");
+        xml = p.matcher(xml).replaceAll("");
         SAXReader reader = new SAXReader();
         Iterator ir = reader.read(new StringReader(xml)).getRootElement().nodeIterator();
         boolean whitespaceFlag = false;
