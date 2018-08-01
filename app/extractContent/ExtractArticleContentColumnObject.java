@@ -79,10 +79,14 @@ public class ExtractArticleContentColumnObject {
             } else {
                 if (article.getArticleList().get(j).contains("\t")) {
                     String[] x = article.getArticleList().get(j).split("\t");
-                    content += "      " + x[x.length - 1];
+                    if (x.length > 0) {
+                        content += "      " + x[x.length - 1];
+                    }
                 } else if (article.getArticleList().get(j).contains(" ")) {
                     String[] x = article.getArticleList().get(j).split(" ");
-                    content += "      " + x[x.length - 1];
+                    if (x.length > 0) {
+                        content += " " + x[x.length - 1];
+                    }
                 }
             }
         }
