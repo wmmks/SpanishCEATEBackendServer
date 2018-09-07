@@ -1,4 +1,4 @@
-package Search;
+package search;
 
 import constantField.XMLArticleConstantTable;
 import org.dom4j.DocumentException;

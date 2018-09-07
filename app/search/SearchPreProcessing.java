@@ -1,4 +1,4 @@
-package Search;
+package search;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;

@@ -1,6 +1,7 @@
 package controllers;
 
-import Search.SearchPreProcessing;
+import org.dom4j.DocumentException;
+import search.SearchPreProcessing;
 import com.fasterxml.jackson.databind.JsonNode;
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
@@ -12,6 +13,7 @@ import play.mvc.*;
 
 import sqlCommandLogic.SqlCommandComposer;
 import sqlCommandLogic.UserData;
+import xml_check.XMLProcessing;
 
 import javax.inject.Inject;
 import java.sql.ResultSet;
@@ -32,7 +34,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Check Page Get User Data Function.
+     * Check Page, Get User Data Function.
      */
     public Result getUserData() {
         DatabaseController databaseController = new DatabaseController();
@@ -67,7 +69,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Check Page Update User Data Function.
+     * Check Page, Update User Data Function.
      */
     public Result updateUserData() {
         DatabaseController databaseController = new DatabaseController();
@@ -92,7 +94,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Extract Sentence Link List Function.
+     * Search Page, Extract Sentence Link List Function.
      */
     public Result getSearchData() {
         JsonNode request = request().body().asJson();
@@ -107,7 +109,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Extract Lemma Link List Function.
+     * Search Page, Extract Lemma Link List Function.
      */
     public Result getSearchLemmaData() {
         JsonNode request = request().body().asJson();
@@ -122,7 +124,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Fuzzy Function.
+     * Search Page, Fuzzy Function.
      */
     public Result getFuzzyData() {
         JsonNode request = request().body().asJson();
@@ -137,7 +139,7 @@ public class CeateBackendController extends Controller {
     }
 
     /**
-     * Search Page Extract Original Article and Correct Article And Author Information Function.
+     * Search Page, Extract Original Article and Correct Article And Author Information Function.
      */
     public Result getSearchXMLAndAuthorInfoResult() {
         JsonNode request = request().body().asJson();
@@ -147,6 +149,22 @@ public class CeateBackendController extends Controller {
             result = searchPostProcessing.setSearchProcessingOfXMLAndAuthorInfo(new JSONObject(request.toString()));
         } catch (SQLException e) {
             e.getErrorCode();
+        }
+        return ok(result);
+    }
+
+    /**
+     * XML Checker, Extract Original Article and Correct Article Function.
+     */
+    public Result getXMLResult() {
+        JsonNode request = request().body().asJson();
+        XMLProcessing xmlProcessing = new XMLProcessing();
+        JsonNode result;
+        try {
+            result = xmlProcessing.setXMLResult(new JSONObject(request.toString()));
+        } catch (DocumentException e) {
+            System.out.print(e.getMessage());
+            result = Json.parse(new JSONObject().put("error_message", "XML format is incorrect, please fix it and re-click checking.").toString());
         }
         return ok(result);
     }

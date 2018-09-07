@@ -1,4 +1,4 @@
-package Search;
+package search;
 
 import constantField.ConstantField;
 import constantField.DatabaseColumnNameVariableTable;
