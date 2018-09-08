@@ -2,6 +2,7 @@ package xml_check;
 
 import articleXMLReader.XMLParser;
 import com.fasterxml.jackson.databind.JsonNode;
+import constantField.ConstantField;
 import json.JSONObject;
 import org.dom4j.DocumentException;
 import play.libs.Json;
@@ -19,12 +20,11 @@ public class XMLProcessing {
      * @return result original or correct sentence link
      */
     public JsonNode setXMLResult(JSONObject userDataJsonObject) throws DocumentException {
-        String xml = userDataJsonObject.getString("xml");
         XMLParser xmlParser = new XMLParser();
-        xmlParser.setXMLParser(xml);
+        xmlParser.setXMLParser(userDataJsonObject.getString(ConstantField.XML));
         JSONObject resultJsonObject = new JSONObject();
-        resultJsonObject.put("original_article", xmlParser.getOriginalArticle().toString());
-        resultJsonObject.put("correct_article", xmlParser.getCorrectedArticle().toString());
+        resultJsonObject.put(ConstantField.ORIGINAL_ARTICLE, xmlParser.getOriginalArticle().toString());
+        resultJsonObject.put(ConstantField.CORRECT_ARTICLE, xmlParser.getCorrectedArticle().toString());
         return Json.parse(resultJsonObject.toString());
     }
 }

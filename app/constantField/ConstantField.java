@@ -6,6 +6,7 @@ package constantField;
 public class ConstantField {
     static public final String userAndArticleID = "id";
     static public final String userAndArticleSystemType = "system_type";
+    static public final String XML = "xml";
     static public final String databaseStringType = "VARCHAR";
     static public final String databaseIntType = "INT";
     static public final String WORD_TEXT = "text";
