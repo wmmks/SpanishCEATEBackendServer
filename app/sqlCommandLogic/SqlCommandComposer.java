@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class SqlCommandComposer {
     public String getUserDataSqlByIdAndSystemType(int id, int systemType) {
-        String sql = "select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.ID=b.ID and b.ID=c.ID and c.ID=d.ID and d.ID=e.ID and a.ID=" + id + " and a.system_type=" + systemType;
+        String sql = "select * from articles_content as a,users_information as b,articles_information as c,class_information as d,users_special_experience as e where a.ID=b.ID and a.system_type=b.system_type and b.ID=c.ID and b.system_type=c.system_type and c.ID=d.ID and c.system_type=d.system_type and d.ID=e.ID and d.system_type=e.system_type and a.ID=" + id + " and a.system_type=" + systemType;
         return sql;
     }
     public String getOtherColumnSqlByText(String text) {

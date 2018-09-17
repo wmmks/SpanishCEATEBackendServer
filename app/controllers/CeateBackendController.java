@@ -78,7 +78,8 @@ public class CeateBackendController extends Controller {
         JSONObject userDataJsonObject = new JSONObject(request.toString());
         UserData userData = sqlCommandComposer.getUserData(userDataJsonObject);
         int id = userDataJsonObject.getInt(DatabaseColumnNameVariableTable.ID);
-        String updateCondition = "where " + DatabaseColumnNameVariableTable.ID + "=" + id;
+        int systemType = userDataJsonObject.getInt(DatabaseColumnNameVariableTable.SYSTEM_TYPE);
+        String updateCondition = "where " + DatabaseColumnNameVariableTable.ID + "=" + id + " and " + DatabaseColumnNameVariableTable.SYSTEM_TYPE + "=" + systemType;
         databaseController.execUpdate(DatabaseColumnNameVariableTable.usersInformationTableName, userData.getUserInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.articlesInformationTableName, userData.getArticleInformationSqlObject(), updateCondition);
         databaseController.execUpdate(DatabaseColumnNameVariableTable.classInformationTableName, userData.getClassInformationSqlObject(), updateCondition);
