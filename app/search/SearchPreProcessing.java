@@ -241,11 +241,17 @@ public class SearchPreProcessing {
         if (count==termList.size()){return Json.parse(fuzzyResultJsonObject.toString());}
         // FUZZY SEARCH
         palabra.setFuzzyOfPalabra(userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY));
+        String fuzzyQuery = userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY);
         List<String> fuzzyList = palabra.getFuzzyList();
         for(String f : fuzzyList) {
-            fuzzy = f;
-            setSearchProcessingOfPalabra(userDataJsonObject);
-            fuzzy = "";
+            // For fuzzy os term problem
+            if (fuzzyQuery.equals("os") && (f.split(":")[0].toLowerCase().contains("los") || f.split(":")[0].toLowerCase().contains("nos"))) {
+                //System.out.println(f);
+            } else {
+                fuzzy = f;
+                setSearchProcessingOfPalabra(userDataJsonObject);
+                fuzzy = "";
+            }
         }
         return Json.parse(fuzzyResultJsonObject.toString());
     }
