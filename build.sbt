@@ -16,3 +16,6 @@ libraryDependencies ++= Seq(
 libraryDependencies += "dom4j" % "dom4j" % "1.6.1"
 
 
+
+
+fork in run := true

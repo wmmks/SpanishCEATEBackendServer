@@ -58,7 +58,7 @@ class SearchType {
      * @param nextWordPOS next word pos
      * @throws SQLException SQL Exception
      */
-    void setSentenceOfPalabra(String wordText, String wordPOS, String nextWordPOS, String type) throws SQLException {
+    void setSentenceOfPalabra(String systemType, String wordText, String wordPOS, String nextWordPOS, String type) throws SQLException {
         List<List<String>> wordIDListInList = new ArrayList<>();
         List<String> sentenceIDInListByOriginal = new ArrayList<>();
         List<String> sentenceIDInListByCorrect = new ArrayList<>();
@@ -141,7 +141,7 @@ class SearchType {
         if (type.equals(ConstantField.ORIGINAL)) {
             Collections.sort(sentenceIDInListByOriginal);
             for (String sentenceID : sentenceIDInListByOriginal) {
-                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.ORIGINAL);
+                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0] + ":" + systemType, ConstantField.ORIGINAL);
                 if (list.size() != 0) {
                     originalList.add(list);
                     originalPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));
@@ -150,7 +150,7 @@ class SearchType {
         } else if(type.equals(ConstantField.CORRECT)) {
             Collections.sort(sentenceIDInListByCorrect);
             for (String sentenceID : sentenceIDInListByCorrect) {
-                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0], ConstantField.CORRECT);
+                List list = otherColumnExtraction.getOtherColumnExtraction(sentenceID.split(":")[0] + ":" + systemType, ConstantField.CORRECT);
                 if (list.size() != 0) {
                     correctList.add(list);
                     correctPositionList.add(Integer.parseInt(sentenceID.split(":")[1]));

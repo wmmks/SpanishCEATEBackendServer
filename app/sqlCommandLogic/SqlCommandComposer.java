@@ -30,20 +30,20 @@ public class SqlCommandComposer {
         return sql;
     }
     public String getOriginalSqlByWordId(int id) {
-        String sql = "select * from original_words_Index_table as a where a.word_id='" + id + "'";
+        String sql = "select sentence_id, position from original_words_Index_table as a where a.word_id='" + id + "'";
         return sql;
     }
     public String getCorrectSqlByWordId(int id) {
-        String sql = "select * from corrected_words_Index_table as a where a.word_id='" + id + "'";
+        String sql = "select sentence_id, position from corrected_words_Index_table as a where a.word_id='" + id + "'";
         return sql;
     }
     public String getOriginalSqlByWordId(int sentenceID, int position) {
-        String sql = "select * from original_words_Index_table as a where a.sentence_id='"
+        String sql = "select word_id from original_words_Index_table as a where a.sentence_id='"
                 + sentenceID + "'" + "and a.position='" + position + "'";
         return sql;
     }
     public String getCorrectSqlByWordId(int sentenceID, int position) {
-        String sql = "select * from corrected_words_Index_table as a where a.sentence_id='"
+        String sql = "select word_id from corrected_words_Index_table as a where a.sentence_id='"
                 + sentenceID + "'" + "and a.position='" + position + "'";
         return sql;
     }
@@ -52,29 +52,29 @@ public class SqlCommandComposer {
                 + nextWordID + "'" + "and a.pos like '" + pos + "=%'";
         return sql;
     }
-    public String getOriginalSqlBySentenceId(int id) {
-        String sql = "select * from original_sentences_content as a where a.ID='" + id + "'";
+    public String getOriginalSqlBySentenceId(int id, int systemType) {
+        String sql = "select * from original_sentences_content as a where a.ID='" + id + "' and system_type = '" + systemType + "'";
         return sql;
     }
-    public String getCorrectSqlBySentenceID(int id) {
-        String sql = "select * from corrected_sentences_content as a where a.ID='" + id + "'";
+    public String getCorrectSqlBySentenceID(int id, int systemType) {
+        String sql = "select * from corrected_sentences_content as a where a.ID='" + id + "' and system_type = '" + systemType + "'";
         return sql;
     }
-    public String getXMLByArticleID(String id) {
-        String sql = "select xml_content from articles_content where ID='" + id + "'";
+    public String getXMLByArticleID(String id, int systemType) {
+        String sql = "select xml_content from articles_content where ID='" + id + "' and system_type = '" + systemType + "'";
         return sql;
     }
-    public String getOriginalSentenceIDByArticleID(String articleID) {
-        String sql = "select min(b.ID) from original_sentences_content as b where b.article_id ='" + articleID + "'";
+    public String getOriginalSentenceIDByArticleID(String articleID, int systemType) {
+        String sql = "select min(b.ID) from original_sentences_content as b where b.article_id ='" + articleID + "' and system_type = '" + systemType + "'";
         return sql;
     }
-    public String getCorrectSentenceIDByArticleID(String articleID) {
-        String sql = "select min(a.ID) from corrected_sentences_content as a where a.article_id ='" + articleID + "'";
+    public String getCorrectSentenceIDByArticleID(String articleID, int systemType) {
+        String sql = "select min(a.ID) from corrected_sentences_content as a where a.article_id ='" + articleID + "' and system_type = '" + systemType + "'";
         return sql;
     }
-    public String getAuthorInformation(String articleID) {
+    public String getAuthorInformation(String articleID, int systemType) {
         String sql = "select a.ID,a.gender,a.school_name,a.department,b.submitted_year,a.learning_hours, c.special_experience from users_information as a, articles_information as b,users_special_experience as c " +
-                "where a.ID ='" + articleID + "' and a.ID = b.ID and b.ID = c.ID";
+                "where a.ID ='" + articleID + "' and a.ID = b.ID and b.ID = c.ID and a.system_type = '" + systemType + "' and a.system_type = b.system_type and b.system_type = c.system_type";
         return sql;
     }
     public String getExistByOtherColumnCondition(Object object) {

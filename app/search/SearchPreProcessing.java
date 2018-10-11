@@ -55,19 +55,20 @@ public class SearchPreProcessing {
         }
         String nextWordPOS = userDataJsonObject.getString(ConstantField.NEXT_WORD_POS);
         String originalOrCorrect = userDataJsonObject.getString(ConstantField.ORIGINAL_OR_CORRECT);
+        String systemType = userDataJsonObject.getString(ConstantField.userAndArticleSystemType);
         JSONObject resultJsonObject = new JSONObject();
         List<List<Map<String, String>>> originalListList;
         List<List<Map<String, String>>> correctListList;
         List<Integer> originalPositionList;
         List<Integer> correctPositionList;
         if (originalOrCorrect.equals("1")) {
-            palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.ORIGINAL);
+            palabra.setSentenceOfPalabra(systemType, wordText, wordPOS, nextWordPOS, ConstantField.ORIGINAL);
             originalListList = palabra.getOriginalList();
             originalPositionList = palabra.getOriginalPositionList();
             resultJsonObject = pageResult(userDataJsonObject, ConstantField.ORIGINAL,
                     originalListList, originalPositionList);
         } else if(originalOrCorrect.equals("2")) {
-            palabra.setSentenceOfPalabra(wordText, wordPOS, nextWordPOS, ConstantField.CORRECT);
+            palabra.setSentenceOfPalabra(systemType, wordText, wordPOS, nextWordPOS, ConstantField.CORRECT);
             correctListList = palabra.getCorrectList();
             correctPositionList = palabra.getCorrectPositionList();
             resultJsonObject = pageResult(userDataJsonObject, ConstantField.CORRECT,
@@ -201,6 +202,7 @@ public class SearchPreProcessing {
                     span = new ArrayList<>();
                 }
             }
+            String systemType = userDataJsonObject.getString(ConstantField.userAndArticleSystemType);
             // 主要判斷是否有符合要求的條件，以及存在 span 才可輸出到前端頁面
             if(palabra.judgeExists(article_id, userDataJsonObject)) {
                 // Avoid DB Select Similar Term Problem!
@@ -208,7 +210,7 @@ public class SearchPreProcessing {
                     resultJsonObject.put(sentence_id + ""
                             ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + article_id
                                     + "&sentenceID=" + sentence_id + "&query=" + wordText + "&source="
-                                    + type + "&sentence=" + sentence + "\'>"
+                                    + type + "&systemType=" + systemType + "&sentence=" + sentence + "\'>"
                                     + htmlSentence + "</a>");
                 }
             }
@@ -238,7 +240,7 @@ public class SearchPreProcessing {
                 count++;
             }
         }
-        if (count==termList.size()){return Json.parse(fuzzyResultJsonObject.toString());}
+        if (count == termList.size()){return Json.parse(fuzzyResultJsonObject.toString());}
         // FUZZY SEARCH
         palabra.setFuzzyOfPalabra(userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY));
         String fuzzyQuery = userDataJsonObject.getString(DatabaseColumnNameVariableTable.FUZZY);
@@ -289,17 +291,18 @@ public class SearchPreProcessing {
         String sentenceID = userDataJsonObject.getString(ConstantField.SENTENCE_ID);
         String query = userDataJsonObject.getString(ConstantField.WORD_TEXT);
         String source = userDataJsonObject.getString(ConstantField.SOURCE);
+        String systemType = userDataJsonObject.getString(ConstantField.userAndArticleSystemType);
         XMLMatchProcessor xmlMatchProcessor = new XMLMatchProcessor();
         SqlCommandComposer sqlCommandComposer = new SqlCommandComposer();
-        ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID));
+        ResultSet resultSet = databaseController.execSelect(sqlCommandComposer.getXMLByArticleID(articleID, Integer.parseInt(systemType)));
         ResultSet minResultSet = null;
-        ResultSet articleAuthorInfoResult = databaseController.execSelect(sqlCommandComposer.getAuthorInformation(articleID));
+        ResultSet articleAuthorInfoResult = databaseController.execSelect(sqlCommandComposer.getAuthorInformation(articleID, Integer.parseInt(systemType)));
         int minID = 0;
         String xml = "";
         if (source.equals(ConstantField.ORIGINAL)) {
-            minResultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSentenceIDByArticleID(articleID));
+            minResultSet = databaseController.execSelect(sqlCommandComposer.getOriginalSentenceIDByArticleID(articleID, Integer.parseInt(systemType)));
         } else if (source.equals(ConstantField.CORRECT)) {
-            minResultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSentenceIDByArticleID(articleID));
+            minResultSet = databaseController.execSelect(sqlCommandComposer.getCorrectSentenceIDByArticleID(articleID, Integer.parseInt(systemType)));
         }
         if (minResultSet != null) {
             try {
@@ -328,6 +331,11 @@ public class SearchPreProcessing {
             resultJsonObject.put(DatabaseColumnNameVariableTable.DEPARTMENT, articleAuthorInfoResult.getString(4));
             resultJsonObject.put(DatabaseColumnNameVariableTable.SUBMITTED_YEAR, articleAuthorInfoResult.getString(5));
             resultJsonObject.put(DatabaseColumnNameVariableTable.LEARNING_HOURS, articleAuthorInfoResult.getString(6));
+            if (systemType.equals("1")) {
+                resultJsonObject.put(DatabaseColumnNameVariableTable.SYSTEM_TYPE, "CEATE");
+            } else {
+                resultJsonObject.put(DatabaseColumnNameVariableTable.SYSTEM_TYPE, "COATE");
+            }
             if (articleAuthorInfoResult.getString(7).equals("1")) {
                 resultJsonObject.put(DatabaseColumnNameVariableTable.SPECIAL_EXPERIENCE, "無");
             } else {
