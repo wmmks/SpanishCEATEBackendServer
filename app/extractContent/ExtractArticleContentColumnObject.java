@@ -49,13 +49,13 @@ public class ExtractArticleContentColumnObject {
             }
             object = userDataJsonObject.get(columnName);
         } else if (columnName.equals(DatabaseColumnNameVariableTable.originalArticleText)) {
-            if (isChinese(xmlParser.getOriginalArticle().toString())) {
+            if (isChinese(xmlParser.getOriginalArticle().toString().substring(0, 20))) {
                 object = reviseTextContent(xmlParser.getOriginalArticle());
             } else {
                 object = xmlParser.getOriginalArticle();
             }
         } else if (columnName.equals(DatabaseColumnNameVariableTable.correctedArticleText)) {
-            if (isChinese(xmlParser.getCorrectedArticle().toString())) {
+            if (isChinese(xmlParser.getCorrectedArticle().toString().substring(0, 20))) {
                 object = reviseTextContent(xmlParser.getCorrectedArticle());
             } else {
                 object = xmlParser.getCorrectedArticle();

@@ -190,6 +190,7 @@ public class SearchPreProcessing {
                     sentence_id = listList.get(i).get(0).get(m);
                 }
             }
+            String positionResult = "";
             // 判斷下一句是否是同一篇文章的同一句
             if (i < listList.size() - 1) {
                 if (listList.get(i + 1).get(0).get(type + ConstantField._SENTENCE_ID).equals(sentence_id)
@@ -198,6 +199,11 @@ public class SearchPreProcessing {
                     span.add(positionList.get(i));
                     continue;
                 } else {
+                    if (span.size() != 0) {
+                        positionResult = span.toString();
+                    } else {
+                        positionResult = positionList.get(i).toString();
+                    }
                     priorResult = "";
                     span = new ArrayList<>();
                 }
@@ -210,8 +216,8 @@ public class SearchPreProcessing {
                     resultJsonObject.put(sentence_id + ""
                             ,"<a href = \'/cate_searchpage/showArticle.php?" + "&articleID=" + article_id
                                     + "&sentenceID=" + sentence_id + "&query=" + wordText + "&source="
-                                    + type + "&systemType=" + systemType + "&sentence=" + sentence + "\'>"
-                                    + htmlSentence + "</a>");
+                                    + type + "&systemType=" + systemType + "&sentence=" + sentence + "&position="
+                                    + positionResult.replaceAll("\\[|\\]", "") + "\'>" + htmlSentence + "</a>");
                 }
             }
         }

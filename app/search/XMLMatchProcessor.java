@@ -304,9 +304,10 @@ class XMLMatchProcessor {
             for (HashMap w: s) {
                 if (!w.get(0).equals("")) {
                     String word;
-                    if (w.get(0).toString().contains(query)) {
+                    if (w.get(0).toString().contains(query) && markSentence) {
                         String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
-                        word = w.get(0).toString().replaceAll(query, queryTag);
+                        String regexEx = "\\b" + query + "\\b";
+                        word = w.get(0).toString().replaceAll(regexEx, queryTag);
                     } else {
                         word = w.get(0).toString();
                     }

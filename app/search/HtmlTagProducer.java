@@ -46,9 +46,12 @@ public class HtmlTagProducer {
 
         }
 
-        if (word.contains(query)) {
-            String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
-            word = word.replaceAll(query, queryTag);
+        if (markSentence) {
+            if (word.contains(query)) {
+                String queryTag = "<span style=\"color: red;\"><u>" + query + "</u></span>";
+                String regexEx = "\\b" + query + "\\b";
+                word = word.replaceAll(regexEx, queryTag);
+            }
         }
         if (!markSentence) {
             tag = "<span style=\"color:#000000; cursor:pointer;\">" +
