@@ -138,6 +138,7 @@ public class SearchPreProcessing {
                         if ((charArray[j] + "").equals(" ")) {
                             if (temp.equals(wordText) &&  position == positionList.get(i)) {
                                 htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                                span.add(positionList.get(i));
                             } else {
                                 htmlSentence += temp;
                             }
@@ -154,6 +155,7 @@ public class SearchPreProcessing {
                             if ((charArray[j] + "").equals(n)) {
                                 if (temp.equals(wordText) &&  position == positionList.get(i)) {
                                     htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                                    span.add(positionList.get(i));
                                 } else {
                                     htmlSentence += temp;
                                 }
@@ -180,6 +182,7 @@ public class SearchPreProcessing {
                             if (j == charArray.length - 1) {
                                 if (temp.equals(wordText) &&  position == positionList.get(i)) {
                                     htmlSentence += "<span style=\"color:#FF0000;\">" + wordText + "</span>";
+                                    span.add(positionList.get(i));
                                 } else {
                                     htmlSentence += temp;
                                 }
@@ -196,18 +199,14 @@ public class SearchPreProcessing {
                 if (listList.get(i + 1).get(0).get(type + ConstantField._SENTENCE_ID).equals(sentence_id)
                         && listList.get(i + 1).get(0).get(type + ConstantField._ARTICLE_ID).equals(article_id)) {
                     priorResult = htmlSentence;
-                    span.add(positionList.get(i));
                     continue;
                 } else {
-                    if (span.size() != 0) {
-                        positionResult = span.toString();
-                    } else {
-                        positionResult = positionList.get(i).toString();
-                    }
+                    positionResult = span.toString();
                     priorResult = "";
                     span = new ArrayList<>();
                 }
             }
+//            System.out.println(positionResult);
             String systemType = userDataJsonObject.getString(ConstantField.userAndArticleSystemType);
             // 主要判斷是否有符合要求的條件，以及存在 span 才可輸出到前端頁面
             if(palabra.judgeExists(article_id, userDataJsonObject)) {
